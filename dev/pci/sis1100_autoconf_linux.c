@@ -72,7 +72,7 @@ const char* subdevnames[4]={
     "dsp"
 };
 
-MODULE_AUTHOR("Peter Wuestner <P.Wuestner@fz-juelich.de>");
+MODULE_AUTHOR("Old: Peter Wuestner <P.Wuestner@fz-juelich.de>");
 MODULE_DESCRIPTION("SIS1100 PCI-VME link/interface");
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_SUPPORTED_DEVICE("sis1100/sis3100/sis5100/sis8100; "

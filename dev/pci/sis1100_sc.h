@@ -141,9 +141,9 @@ enum dmablock_status {
 #endif
 
 #define SWAP32(a) ( (((u_int32_t)(a) << 24) & 0xff000000) | \
-                    (((u_int32_t)(a) << 8) & 0x00ff0000) | \
-                    (((u_int32_t)(a) >> 8) & 0x0000ff00) | \
-                    (((u_int32_t)(a) >>24) & 0x00000ff0) )
+                    (((u_int32_t)(a) <<  8) & 0x00ff0000) | \
+                    (((u_int32_t)(a) >>  8) & 0x0000ff00) | \
+                    (((u_int32_t)(a) >> 24) & 0x000000ff) )
 
 #define irq_pending(sc, fd, mask) \
     ((sc->pending_irqs & (fd->owned_irqs & mask)) || \

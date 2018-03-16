@@ -20,11 +20,11 @@ MODULENAME := sis1100
 .PHONY: driver
 
 driver:
-	make -C /lib/modules/$(KERNVER)/build SUBDIRS=$(shell pwd) modules
+	make -C /lib/modules/$(KERNVER)/build M=$(shell pwd) modules
 
 install:
 	-/sbin/rmmod $(MODULENAME)
-	make -C /lib/modules/$(KERNVER)/build SUBDIRS=$(shell pwd) modules_install
+	make -C /lib/modules/$(KERNVER)/build M=$(shell pwd) modules_install
 	/sbin/depmod -a
 	/sbin/modprobe $(MODULENAME)
 	cp -f ../../udev-rules/92-struck.rules /etc/udev/rules.d/92-struck.rules

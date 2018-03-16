@@ -260,7 +260,7 @@ sis1100_init(struct sis1100_softc* sc)
         break;
     case 0x00020200: /* PCIe device with four links, only first link used */
         MIN_FV=1;
-        MAX_FV=2;
+        MAX_FV=5;
         expected_pci_id=PCI_PRODUCT_FZJZEL_SIS1100_eSINGLE;
         sc->sendfifo_size=4096;
         sc->sendfifo_of=sc->sendfifo_size-128;
