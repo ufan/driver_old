@@ -1,0 +1,165 @@
+V259 multihit pattern
+A24D16
+base: <8..23>
+size=265
+base+0xfe <15..12> version       <11..0> serial
+base+0xfc <15..10> manufacturer> <9..0> type
+base+0xfa=0xfaf5
+manufacturer=10b=2h
+type=100=4h
+
+
+V262 IO reg
+A24D16
+size=265
+base+0xfe <15..12> version       <11..0> serial
+base+0xfc <15..10> manufacturer> <9..0> type
+base+0xfa=0xfaf5
+manufacturer=10
+type=1
+
+
+V512 Logic
+A32/24/D16
+base: <8..31>
+size=256
+base+0xfe <15..12> version       <11..0> serial
+base+0xfc <15..10> manufacturer> <9..0> type
+base+0xfa=0xfaf5
+manufacturer=10
+type=11010=1ah=26d
+
+
+V550 C-RAMS
+A32/24/D16
+base: <16..31>
+size=
+base+0xfe <15..12> version       <11..0> serial
+base+0xfc <15..10> manufacturer> <9..0> type
+base+0xfa=0xfaf5
+manufacturer=10
+type=110100=34h=52d
+
+
+V551 C-RAMS sequencer
+A32/24/D16
+base: <16..31>
+size=
+base+0xfe <15..12> version       <11..0> serial
+base+0xfc <15..10> manufacturer> <9..0> type
+base+0xfa=0xfaf5
+manufacturer=10
+type=111100=0x3c
+
+
+V560 counter
+A32/24/D16
+base: <8..31>
+size=256
+base+0xfe <15..12> version       <11..0> serial
+base+0xfc <15..10> manufacturer> <9..0> type
+base+0xfa=0xfaf5
+manufacturer=10=2h
+type=11000=0x18
+
+
+V673 tdc
+base: <16..31>
+size=
+A32/24/D16
+base+0xfe <15..12> version       <11..0> serial
+base+0xfc <15..10> manufacturer> <9..0> type
+base+0xfa=0xfaf5
+manufacturer=10=2h
+type=100101100=0x12c
+
+
+V729 flash adc
+A32/24/D16
+base: <16..31>
+size=65536
+base+0xfe <15..12> version       <11..0> serial
+base+0xfc <15..10> manufacturer> <9..0> type
+base+0xfa=0xfaf5
+manufacturer=10=2h
+type=1001000=0x48
+
+
+V767 tdc
+A32/24/D16(?)
+base: <16..31>
+size=8192(?)
+1026..102e manufacturer = 00 40 e6
+1032..103e bord id      = 00 00 02 ff
+104e       revision     = 00
+1f02..1f06 serial       = ...
+
+
+V775 tdc
+A32/24/D16(?)
+base: <16..31>
+size=36864(?)
+8026..802e manufacturer = 00 40 e6
+8032       version      = 11
+8036..803e bord id      = 00 03 07
+804e       revision     = 00
+8f02..8f06 serial       = 00 02
+
+
+V785 peak sensing adc
+A32/24/D16(?)
+base: <16..31>
+size=4352(?)
+8026..802e manufacturer = 00 40 e6
+8032       version      = 11
+8036..803e bord id      = 00 03 11
+804e       revision     = 00
+8f02..8f06 serial       = 00 02
+
+
+V792 qdc
+A32/24/D16(?)
+base: <16..31>
+size=65536
+8026..802e manufacturer = 00 40 e6
+8032       version      = 11
+8036..803e bord id      = 00 03 18
+804e       revision     = 00
+8f02..8f06 serial       = 00 02
+
+
+V820/830 scaler
+A32/24/D16(?)
+base: <16..31>
+size=
+8026..802e manufacturer = 00 40 e6
+8032       version      = 11
+8036..803e bord id      = 00 03 43
+804e       revision     = 00
+8f02..8f06 serial       = 00 02
+
+
+V1488 tdc
+A32/24/D16(?)
+base: <16..31>
+size=
+base+0xfe <15..12> version       <11..0> serial
+base+0xfc <15..10> manufacturer> <9..0> type
+base+0xfa=0xfaf5
+manufacturer=10=2h
+type=110111=0x37
+
+real modules:
+259E  0106 0x00080000
+262   0158 0x00090000
+512   0022 0x000a0000
+560E  0283 0x000b0000
+560E  0285 0x000c0000
+729A  0013 0x000d0000 x
+729A  0016 0x000e0000 x
+767     8  0x000f0000
+775    217 0x00100000
+785AE  212 0x00110000
+792AA  230 0x00120000
+792AA  232 0x00130000
+

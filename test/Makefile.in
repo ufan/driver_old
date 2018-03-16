@@ -1,0 +1,51 @@
+# $ZEL: Makefile.in,v 1.2 2002/08/19 10:54:35 wuestner Exp $
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+@SET_MAKE@
+
+CC           := gcc
+WFLAGS       := -Wstrict-prototypes -Wmissing-prototypes \
+                -Wmissing-declarations-Wimplicit -Wreturn-type -Wunused \
+                -Wcomment -Wformat -Wuninitialized
+#                -Werror
+
+DRIVERBASE   := @driverbase@
+DRIVERINCLUDE:= $(DRIVERBASE)/common
+CPPFLAGS     := -I$(DRIVERINCLUDE) -I.
+CFLAGS       := -O3 -ansi $(WFLAGS)
+
+cfiles       := $(notdir $(wildcard $(srcdir)/*.c))
+#cfiles       := linkirqtest.c linkirqtest1.c frontirqtest.c test_mapsize.c \
+                frontin_3100.c frontin_1100.c frontout_3100.c frontout_1100.c \
+                maptest.c find_caen.c
+EXEC         := $(cfiles:.c=)
+
+.PHONY: all
+all: $(EXEC)
+
+clean:
+	rm -f *.o core $(EXEC)
+
+realclean:  clean
+	cp Makefile Makefile.bak
+	sed -e '/^# DO NOT DELETE THIS LINE/,$$d' < Makefile.bak > Makefile
+	echo '# DO NOT DELETE THIS LINE' >> Makefile
+	echo ' ' >> Makefile
+	rm Makefile.bak
+
+distclean:  clean
+	rm -f *.bak *.bck Makefile
+	rm -f config.status configure config.cache config.log
+
+depend:
+	cp Makefile Makefile.bak
+	sed -e '/^# DO NOT DELETE THIS LINE/,$$d' < Makefile.bak > Makefile
+	echo '# DO NOT DELETE THIS LINE' >> Makefile
+	echo ' ' >> Makefile
+	for i in $(cfiles) ; do \
+	  echo checking $$i ; \
+	  $(CC) -M $(CPPFLAGS) $(srcdir)/$$i >> Makefile ; \
+	done
+# DO NOT DELETE THIS LINE
+ 

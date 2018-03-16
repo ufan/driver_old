@@ -1,0 +1,64 @@
+ident (OK)
+    liest Ident-Register mittels PLXREADLOCAL0 und
+    liest gespeicherte IDs aus dem Treiber mit SIS1100_IDENT
+
+inttest (partiell OK)
+    benutzt einen SIS3600, um VME-IRQ zu erzeugen.
+    	Noch unvollstaendig, Signal wird an User_prozess geliefert;
+	Abholen der Daten (Level, Vector fehlt noch)
+
+pipeline (A32/D16 OK)
+    pipeline-read ohne DMA, Daten werden im Treiber kopiert.
+
+reset1100 (OK)
+reset3100 (OK)
+    Setzt die lokale oder remote Seite zurueck. Danach sollte der Treiber neu
+    	geladen werden, da sein erwarteter setup ja kaputt ist.
+    
+synctest (OK)
+    macht nur sinnvollen Output, wenn der optische Link unzuverlaessig ist.
+
+read_write_driver (OK)
+    VME-Zugriffe als SIS1100_VME_READ, SIS1100_VME_WRITE
+    nur A32/D32 getestet
+
+read_write_driver_a (read OK)
+    VME-Zugriffe als SIS1100_VME_READ, SIS1100_VME_WRITE, CAEN-Variante
+    nur A32/D16 read getestet
+
+read_write_driver_1 (read OK)
+    VME-Zugriffe als PLXREADLOCAL0, PLXWRITELOCAL0; remote space 1
+    nur als Test gedacht, endgueltiger Treiber wird PLXREAD/WRITE nicht erlauben
+    nur A32/D16 read getestet
+
+read_write_driver_4 (fehlt noch)
+    VME-Zugriffe als PLXREADLOCAL0, PLXWRITELOCAL0; remote space 4
+    nur als Test gedacht, endgueltiger Treiber wird PLXREAD/WRITE nicht erlauben
+
+read_write_mapped_1 ()
+    VME-Zugriffe gemapped; remote space 1
+
+read_write_mapped_4 (fehlt noch)
+    VME-Zugriffe gemapped; remote space 4 (doppeltes address-mapping)
+    (nur so zum Spass)
+
+read_write (OK falls man kein DMA will)
+    VME-Zugriffe als seek, read, write
+    (kompatibilitaet zu BIT3-Treiber, seltsam, aber bequem)
+
+read_write1 ()
+    wie read_write, benutzt FIFO_Testmode
+
+read_block (fehlt noch)
+    VME-Blockread; DMA direkt in den User-Space
+    (da wird's doch erst lustig)
+
+...
+read_write_bloed.c (OK)
+    liest Statusregister von SIS3600 10**6 mal
+
+int_dma_test.c (IRQ OK; DMA nicht)
+    erzeugt IRQ mit SIS3600, liest per DMA aus
+
+pipeline.c und pipeline1.c (??)
+    zum Pipeline-Testen

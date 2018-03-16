@@ -1,0 +1,42 @@
+gigalink_pci
+============
+read ident, status
+    SIS1100_IDENT
+    SIS1100_CONTROL_READ
+    mapped (SIS1100_MAPINFO)
+
+controlregister, mailbox, extended mailbox, descriptors
+    SIS1100_CONTROL_READ 
+    SIS1100_CONTROL_WRITE
+    mapped (SIS1100_MAPINFO)
+    SIS1100_BIGENDIAN
+
+
+gigalink_loop
+=============
+?
+
+
+gigalink_vme
+============
+
+SIS1100_SETVMESPACE     
+SIS3100_VME_PROBE       
+SIS3100_VME_READ        
+SIS3100_VME_WRITE       
+SIS3100_VME_BLOCK_READ  
+SIS3100_VME_BLOCK_WRITE 
+SIS1100_CONTROL_READ    glinktest_local_read
+SIS1100_CONTROL_WRITE   
+SIS3100_CONTROL_READ    
+SIS3100_CONTROL_WRITE   
+SIS1100_PIPE            
+SIS1100_MAPINFO         glinktest_local_read
+SIS1100_LAST_ERROR      
+SIS1100_IDENT           glinktest_local_read
+SIS1100_FIFOMODE        
+SIS1100_BIGENDIAN       
+SIS3100_IRQ_CTL         
+SIS3100_IRQ_GET         
+SIS3100_IRQ_ACK         
+SIS1100_KIO_LEN         

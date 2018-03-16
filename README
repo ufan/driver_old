@@ -1,0 +1,17 @@
+[ 4743.715019] sis1100 driver exit
+[ 4743.718034] sis1100 0000:04:05.0: PCI INT A disabled
+[ 4747.101062] SIS1100 driver V2.14 (c) 2010-06-17 Forschungszentrum Juelich
+[ 4747.101750] sis1100: found SIS1100 PCI at 0000:04:05.0
+[ 4747.102468] sis1100 0000:04:05.0: Refused to change power state, currently in D3
+[ 4747.102512] sis1100 0000:04:05.0: PCI INT A -> GSI 24 (level, low) -> IRQ 24
+[ 4747.103448] sis1100[0]: hardwired device id: 0xfffd
+[ 4747.103814] sis1100[0]: local ident: 0xfffdffff
+[ 4747.103830] sis1100[0]: ident=0x000000ff; claims not to be a PCI Device
+[ 4747.103849] sis1100[0]: 0x00: 0xfffdffff
+[ 4747.103865] sis1100[0]: 0x04: 0xfffdffff
+[ 4747.103882] sis1100[0]: 0x08: 0xfffdffff
+[ 4747.103899] sis1100[0]: 0x0c: 0xfffdffff
+[ 4747.103915] sis1100[0]: 0x10: 0xfffdffff
+[ 4747.103959] sis1100 0000:04:05.0: PCI INT A disabled
+03915] sis1100[0]: 0x10: 0xfffdffff
+[ 4747.103959] sis1100 0000:04:05.0: PCI INT A disabled
