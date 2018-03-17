@@ -554,11 +554,11 @@ _sis1100_ioctl32(struct sis1100_softc* sc, struct sis1100_fdata* fd,
     case SIS3100_32_VME_WRITE:
         res=ioctl32_vme_write(sc, fd, (struct sis1100_32_vme_req*)data);
         break;
-    case SIS3100_VME_BLOCK_READ:
+    case SIS3100_32_VME_BLOCK_READ:
         res=ioctl32_vme_block_read(sc, fd,
                 (struct sis1100_32_vme_block_req*)data);
         break;
-    case SIS3100_VME_BLOCK_WRITE:
+    case SIS3100_32_VME_BLOCK_WRITE:
         res=ioctl32_vme_block_write(sc, fd,
                 (struct sis1100_32_vme_block_req*)data);
         break;
