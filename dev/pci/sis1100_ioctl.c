@@ -717,6 +717,8 @@ ioctl_cnaf(struct sis1100_softc* sc, struct sis1100_fdata* fd,
 {
     u_int32_t addr;
 
+    if (sc->remote_hw!=sis1100_hw_camac)
+        return ENXIO;
     addr=SIS5100_CAMACaddr(d->N, d->A, d->F);
 
     switch (d->F&0x18) {

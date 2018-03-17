@@ -29,6 +29,15 @@
 #include "sis1100_sc.h"
 #include "sis3100_map.h"
 
+/* define IRQ_DEBUG as 0 or 1 (should normally be 0) */
+#define IRQ_DEBUG 0
+
+#if (IRQ_DEBUG)
+#   define pIRQ(sc, fmt, arg...) pERROR(sc, fmt, ## arg)
+#else
+#   define pIRQ(sc, fmt, arg...) do {} while(0)
+#endif
+
 static int
 _sis3100_irq_acknowledge(struct sis1100_softc* sc, int level, int32_t *vector)
 {
@@ -46,9 +55,9 @@ _sis3100_irq_acknowledge(struct sis1100_softc* sc, int level, int32_t *vector)
     do {
         error=sis1100readreg(sc, prot_error);
     } while (error==sis1100_e_dlock);
-#if 0
-    pERROR(sc, "3100: Iack(%d), error=0x%x, irqcount=%d, jiffies=%ld",
-        level, error, sc->irqcount, jiffies);
+#if (IRQ_DEBUG)
+    pERROR(sc, "3100: Iack(%d), error=0x%x, jiffies=%ld",
+        level, error, jiffies);
 #endif
     if (error) {
         pERROR(sc, "3100: error in Iack level %d: 0x%x", level, error);
@@ -59,6 +68,55 @@ _sis3100_irq_acknowledge(struct sis1100_softc* sc, int level, int32_t *vector)
         return 0;
     }
 }
+
+static void
+dump_irq_vects(struct sis1100_softc* sc)
+{
+    int level;
+
+    for (level=7; level>0; level--) {
+        if (sc->irq_vects[level].valid) {
+            pERROR(sc, "sis3100: level %d vector 0x%02x",
+                    level, sc->irq_vects[level].vector);
+        } else {
+            pERROR(sc, "sis3100: level %d not pending", level);
+        }
+    }
+}
+
+#if 0
+static void
+dump_irq_vects(struct sis1100_softc* sc)
+{
+    int level;
+
+    for (level=7; level>0; level--) {
+        if (sc->irq_vects[level].valid) {
+            pERROR(sc, "sis3100: level %d vector 0x%02x",
+                    level, sc->irq_vects[level].vector);
+        } else {
+            pERROR(sc, "sis3100: level %d not pending", level);
+        }
+    }
+}
+#endif
+
+#if 0
+static void
+dump_irq_vects(struct sis1100_softc* sc)
+{
+    int level;
+
+    for (level=7; level>0; level--) {
+        if (sc->irq_vects[level].valid) {
+            pERROR(sc, "sis3100: level %d vector 0x%02x",
+                    level, sc->irq_vects[level].vector);
+        } else {
+            pERROR(sc, "sis3100: level %d not pending", level);
+        }
+    }
+}
+#endif
 
 #if 0
 /* for internal tests only */
@@ -88,6 +146,12 @@ sis3100rem_irq_handler(struct sis1100_softc* sc, u_int32_t doorbell)
  */
     u_int32_t irqmask, new_irqs;
     int level;
+
+#if (IRQ_DEBUG)
+    pERROR(sc, "3100: irq_handler, doorbell=0x%x, new_irqs=0x%x, "
+            "vme_irqs=0x%x",
+            doorbell, doorbell&~sc->pending_irqs, doorbell&SIS3100_VME_IRQS);
+#endif
 
     mutex_lock(&sc->sem_hw);
 
@@ -121,6 +185,10 @@ sis3100rem_irq_handler(struct sis1100_softc* sc, u_int32_t doorbell)
 
     mutex_unlock(&sc->sem_hw);
 
+#if (IRQ_DEBUG)
+    dump_irq_vects(sc);
+#endif
+
     return new_irqs;
 }
 
@@ -129,6 +197,10 @@ sis3100rem_enable_irqs(struct sis1100_softc* sc,
         struct sis1100_fdata* fd, u_int32_t mask)
 {
     u_int32_t irqmask;
+
+#if (IRQ_DEBUG)
+    pERROR(sc, "3100: enable_irqs, mask=0x%x", mask);
+#endif
 
     mutex_lock(&sc->sem_hw);
 
@@ -157,6 +229,10 @@ sis3100rem_disable_irqs(struct sis1100_softc* sc,
 {
     u_int32_t irqmask;
 
+#if (IRQ_DEBUG)
+    pERROR(sc, "3100: disable_irqs, mask=0x%x", mask);
+#endif
+
     mutex_lock(&sc->sem_hw);
 
     irqmask=mask&SIS3100_VME_IRQS;
@@ -179,9 +255,10 @@ sis3100rem_get_vector(struct sis1100_softc* sc, u_int32_t irqs,
 /*
  * sc->sem_irqinfo must be held by caller!
  */
-#if 0
-    pERROR(sc, "get_vector: irqs=0x%08x", irqs);
+#if (IRQ_DEBUG)
+    pERROR(sc, "3100: get_vector: irqs=0x%08x", irqs);
 #endif
+
     if (irqs & SIS3100_VME_IRQS) {
         int level;
         /* find highest level set */
@@ -199,7 +276,7 @@ sis3100rem_get_vector(struct sis1100_softc* sc, u_int32_t irqs,
                     data->irq_sec=sc->irq_vects[level].time.tv_sec;
                     data->irq_nsec=sc->irq_vects[level].time.tv_nsec;
                 }
-#if 0
+#if (IRQ_DEBUG)
                 pERROR(sc, "get_vector: vector=0x%08x, level=%d",
                         data->vector, level);
 #endif
@@ -216,6 +293,10 @@ void
 sis3100rem_irq_ack(struct sis1100_softc* sc, u_int32_t irqs)
 {
     u_int32_t irqmask;
+
+#if (IRQ_DEBUG)
+    pERROR(sc, "3100: irq_ack: irqs=0x%08x", irqs);
+#endif
 
     mutex_lock(&sc->sem_hw);
 
