@@ -1,4 +1,4 @@
-/* $ZEL: sis3100rem_irq.c,v 1.15 2009/06/05 16:02:08 wuestner Exp $ */
+/* $ZEL: sis3100rem_irq.c,v 1.18 2016/03/16 20:29:53 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2009

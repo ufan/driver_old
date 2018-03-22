@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_mmap.c,v 1.11 2009/04/26 20:28:21 wuestner Exp $ */
+/* $ZEL: sis1100_mmap.c,v 1.12 2016/03/16 19:33:21 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2004

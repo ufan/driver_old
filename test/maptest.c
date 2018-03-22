@@ -1,4 +1,4 @@
-/* $ZEL$ */
+/* $ZEL: maptest.c,v 1.3 2010/08/02 19:25:39 wuestner Exp $ */
 
 #define _GNU_SOURCE
 #include <stdio.h>

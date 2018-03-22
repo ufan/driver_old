@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_tmp_write.c,v 1.12 2010/04/19 14:22:35 wuestner Exp $ */
+/* $ZEL: sis1100_tmp_write.c,v 1.13 2016/03/16 20:21:11 wuestner Exp $ */
 
 /*
  * Copyright (c) 2003-2008

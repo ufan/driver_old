@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_ddma.c,v 1.1 2010/06/17 18:20:20 wuestner Exp $ */
+/* $ZEL: sis1100_ddma.c,v 1.3 2016/03/16 20:21:11 wuestner Exp $ */
 
 /*
  * Copyright (c) 2005-2010
@@ -60,6 +60,10 @@ plxirq_dma0_hook(struct sis1100_softc *sc, struct timespec time)
     struct demand_dma* dma = &sc->demand_dma;
     struct demand_dma_block *block;
 
+#if 0
+    pERROR(sc, "plxirq_dma0_hook called");
+#endif
+
     /* mark current DMA block as full */
     block=dma->block+dma->writing_block;
     /* sanity check */
@@ -116,7 +120,7 @@ sis1100_ddma_start(struct sis1100_softc *sc, struct sis1100_fdata* fd)
     u_int32_t dmamode;
     int i;
 
-#if 1
+#if 0
     pERROR(sc, "ddma_start");
 #endif
 
@@ -187,7 +191,7 @@ sis1100_ddma_stop(struct sis1100_softc *sc, struct sis1100_fdata* fd,
     DECLARE_SPINLOCKFLAGS(flags)
     struct demand_dma* dma=&sc->demand_dma;
 
-#if 1
+#if 0
     pERROR(sc, "ddma_stop");
 #endif
 

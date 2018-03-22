@@ -1,0 +1,52 @@
+0x00: 0x0015  # Device ID
+0x02: 0x1796  # Vendor ID
+0x04: 0x0780  # Class Code
+0x06: 0x0001  # Class Code/Revision
+0x08: 0x0000  # Maximum Latency/Minimum Grant
+0x0a: 0x0100  # Interrupt Pin/Interrupt Line Routing
+0x0c: 0x0000  # MSW of Mailbox 0
+0x0e: 0x0000  # LSW of Mailbox 0
+0x10: 0x0000  # MSW of Mailbox 1
+0x12: 0x0000  # LSW of Mailbox 1
+0x14: 0xffff  # MSW of Range for PCI-to-Local Address Space 0
+0x16: 0xf000  # LSW of Range for PCI-to-Local Address Space 0
+0x18: 0x8000  # MSW of Local Base Address for PCI-to-Local Address Space 0
+0x1a: 0x0001  # LSW of Local Base Address for PCI-to-Local Address Space 0
+0x1c: 0x0120  # MSW of Mode/DMA Arbitration Register
+0x1e: 0x0000  # LSW of Mode/DMA Arbitration Register
+0x20: 0x0016  # MSW of Serial EEPROM Write-Protected Address
+0x22: 0x0500  # LSW of Local Misc. Control Register/Local Big/Little Endian
+0x24: 0x0000  # MSW of Range for PCI-to-Local Expansion ROM
+0x26: 0x0000  # LSW of Range for PCI-to-Local Expansion ROM
+0x28: 0x0000  # MSW of Local Base Address for PCI-to-Local Expansion ROM
+0x2a: 0x0000  # LSW of Local Base Address for PCI-to-Local Expansion ROM
+0x2c: 0xf243  # MSW of Bus Region Desciptors for PCI-to-Local Accesses
+0x2e: 0x0043  # LSW of Bus Region Desciptors for PCI-to-Local Accesses
+0x30: 0x0000  # MSW of Range for PCI Initiator-to-PCI
+0x32: 0x0000  # LSW of Range for PCI Initiator-to-PCI
+0x34: 0x0000  # MSW of Local Base Address for PCI Initiator-to-PCI Memory
+0x36: 0x0000  # LSW of Local Base Address for PCI Initiator-to-PCI Memory
+0x38: 0x0000  # MSW of Local Bus Address for PCI Initiator-to-PCI I/O Configuation
+0x3a: 0x0000  # LSW of Local Bus Address for PCI Initiator-to-PCI I/O Configuation
+0x3c: 0x0000  # MSW of PCI Base Address for PCI Initiator-to-PCI
+0x3e: 0x0001  # LSW of PCI Base Address for PCI Initiator-to-PCI
+0x40: 0x0000  # MSW of PCI Config. Addr. Reg. for PCI Initiator-to-PCI I/O Config.
+0x42: 0x0000  # LSW of PCI Config. Addr. Reg. for PCI Initiator-to-PCI I/O Config.
+0x44: 0x1500  # Subsystem ID
+0x46: 0x1796  # Subsystem Vendor ID
+0x48: 0xf000  # MSW of Range for PCI-to-Local Address Space 1
+0x4a: 0x0000  # LSW of Range for PCI-to-Local Address Space 1
+0x4c: 0xc000  # MSW of Local Base Address for PCI-to-Local Address Space 1
+0x4e: 0x0001  # LSW of Local Base Address for PCI-to-Local Address Space 1
+0x50: 0x0000  # MSW of Bus Region Desciptors (Space 1) for PCI-to-Local Accesses
+0x52: 0x0043  # LSW of Bus Region Desciptors (Space 1) for PCI-to-Local Accesses
+0x54: 0x0000  # MSW of Hot Swap Control/Status
+0x56: 0x4c06  # LSW of Hot Swap Control / Hot Swap Next Capability Pointer
+0x58: 0x0000  # reserved
+0x5a: 0x0000  # Internal Arbiter Control
+0x5c: 0x5a02  # Power Management Capabilities
+0x5e: 0x4801  # Power Management Next Capability Pointer
+0x60: 0x0000  # Power Management Data
+0x62: 0x0000  # Power Management Control/Status
+0x64: 0x0004  # CMC_Type 0: 5V 1: 3.3V 2: both 3: PCIe+OPT 4: PCIe single link 5: PCIe quad link
+0x66: 0x0001  # Serial No.

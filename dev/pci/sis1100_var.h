@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_var.h,v 1.31 2010/12/07 22:43:27 wuestner Exp $ */
+/* $ZEL: sis1100_var.h,v 1.32 2016/03/16 20:21:11 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2009
@@ -29,7 +29,7 @@
 #ifndef _sis1100_var_h_
 #define _sis1100_var_h_
 
-#define SIS1100_MinVersion 15 /* 16 bit */
+#define SIS1100_MinVersion 16 /* 16 bit */
 #define SIS1100_SubVersion 0  /*  8 bit */
 #define SIS1100_MajVersion 2  /*  8 bit */
 #define SIS1100_Version        \

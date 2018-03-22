@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_ioctl32_linux.c,v 1.13 2010/08/02 19:25:38 wuestner Exp $ */
+/* $ZEL: sis1100_ioctl32_linux.c,v 1.15 2016/03/16 20:21:11 wuestner Exp $ */
 
 /*
  * Copyright (c) 2005-2008
@@ -97,6 +97,11 @@ ioctl32_vme_block_read(struct sis1100_softc* sc, struct sis1100_fdata* fd,
     int res;
     size_t num;
 
+#if 0
+pERROR(sc, "ioctl32_vme_block_read, size=%d, num=%d addr=%08x data=%08x",
+        d->size, d->num, d->addr, d->data);
+#endif
+
     if (sc->remote_hw==sis1100_hw_invalid)
         return ENXIO;
 
@@ -113,7 +118,12 @@ ioctl32_vme_block_write(struct sis1100_softc* sc, struct sis1100_fdata* fd,
 {
     int res;
     size_t num;
- 
+
+#if 0
+pERROR(sc, "ioctl32_vme_block_write, size=%d, num=%d addr=%08x data=%08x",
+        d->size, d->num, d->addr, d->data);
+#endif
+
     if (sc->remote_hw==sis1100_hw_invalid)
         return ENXIO;
 
@@ -544,6 +554,10 @@ _sis1100_ioctl32(struct sis1100_softc* sc, struct sis1100_fdata* fd,
 {
     int res=0;
 
+#if 0
+pERROR(sc, "sis1100: _sis1100_ioctl32 called, cmd=%08x", cmd);
+#endif
+
     switch (cmd) {
     case SIS1100_32_SETVMESPACE:
         res=ioctl32_setvmespace(sc, fd, (struct vmespace_32*)data);
@@ -812,6 +826,10 @@ void __init
 sis1100_ioctl32_init(void)
 {
     int i;
+
+#if 0
+pERROR(0, "sis1100: ioctl32_init called");
+#endif
 
     for (i=0; sis1100_ioctl32_trans[i].cmd!=0; i++) {
         register_ioctl32_conversion(sis1100_ioctl32_trans[i].cmd,

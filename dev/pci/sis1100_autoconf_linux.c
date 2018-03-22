@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_autoconf_linux.c,v 1.43 2010/12/07 22:43:27 wuestner Exp $ */
+/* $ZEL: sis1100_autoconf_linux.c,v 1.45 2016/03/16 20:21:11 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2009
@@ -72,8 +72,8 @@ const char* subdevnames[4]={
     "dsp"
 };
 
-MODULE_AUTHOR("Old: Peter Wuestner <P.Wuestner@fz-juelich.de>");
-MODULE_DESCRIPTION("SIS1100 PCI-VME link/interface");
+MODULE_AUTHOR("Peter Wuestner <P.Wuestner@fz-juelich.de>");
+MODULE_DESCRIPTION("Peter: SIS1100 PCI-VME link/interface");
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_SUPPORTED_DEVICE("sis1100/sis3100/sis5100/sis8100; "
                         "http://www.struck.de/pcivme.htm");
@@ -81,7 +81,7 @@ MODULE_SUPPORTED_DEVICE("sis1100/sis3100/sis5100/sis8100; "
 /* XXX hier muss SIS1100_*Version aus sis1100_var.h benutzt werden */
 /* ==> replace DRIVER_VERSION by printf("%d.%02d", SIS1100_MajVersion, SIS1100_MinVersion) */
 //#define DRIVER_VERSION "2.14"
-#define DATE_STRING "2010-11-28"
+#define DATE_STRING "2013-09-18"
 #define NAME_STRING "Forschungszentrum Juelich"
 
 struct sis1100_softc *sis1100_devdata[sis1100_MAXCARDS];

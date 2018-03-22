@@ -1,4 +1,4 @@
-/* $ZEL$ */
+/* $ZEL: sis_ctrl.c,v 1.2 2010/08/02 19:25:39 wuestner Exp $ */
 
 #define _GNU_SOURCE
 #include <stdio.h>

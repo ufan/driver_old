@@ -1,4 +1,4 @@
-/* $ZEL: irq_link_select.c,v 1.1 2009/04/13 00:13:30 wuestner Exp $ */
+/* $ZEL: irq_link_select.c,v 1.2 2010/08/02 19:25:39 wuestner Exp $ */
 
 #define _GNU_SOURCE
 #include <stdio.h>

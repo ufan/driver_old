@@ -1,0 +1,43 @@
+$ZEL: README_make,v 1.1 2007/02/23 07:10:07 trusov Exp $
+
+Compiling and loading the sis1100 driver
+========================================
+
+Never try to compile the driver inside dev/pci!
+Reason:
+    1st: During compilation some files are created which looks like original
+        source files. They cause strange errors when comilation is done for
+        a different kernel version.
+    2nd: Be able to compile the same sources for different platforms and
+        different kernel versions at the same time.
+    3rd: Be able to use one driver tree on a NFS server for many diskless
+        computers.
+
+NetBSD:
+  compile:
+    $ cd netbsd
+    $ mkdir `hostname` # or add `uname -r` or ...
+    $ cd `hostname`
+    $ ln -s ../sis1100/* .
+    $ make
+  load:
+    put in /etc/rc.local a line like this:
+    (cd /home/trusov/sis1100_cmc/sis1100/netbsd/`hostname`; make load)
+  unload:
+    $ cd /home/trusov/sis1100_cmc/sis1100/netbsd/`hostname`
+    $ make unload
+
+
+Linux:
+  compile:
+    $ cd linux
+    $ mkdir `hostname` # or add `uname -r` or ...
+    $ cd `hostname`
+    $ ln -s ../../dev/pci/* .
+    $ make
+  load:
+    $ cd linux/`hostname`
+    $ ./load_module
+  unload:
+    $ rmmod sis1100
+

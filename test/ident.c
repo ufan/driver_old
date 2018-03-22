@@ -1,4 +1,4 @@
-/* $ZEL$ */
+/* $ZEL: ident.c,v 1.3 2010/08/02 19:25:39 wuestner Exp $ */
 
 #include <stdio.h>
 #include <errno.h>

@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_init.c,v 1.28 2010/06/06 21:23:17 wuestner Exp $ */
+/* $ZEL: sis1100_init.c,v 1.29 2016/03/16 19:33:21 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2008

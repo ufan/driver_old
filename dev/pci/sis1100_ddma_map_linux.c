@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_ddma_map_linux.c,v 1.7 2010/04/19 13:30:39 wuestner Exp $ */
+/* $ZEL: sis1100_ddma_map_linux.c,v 1.8 2016/03/16 20:29:53 wuestner Exp $ */
 
 /*
  * Copyright (c) 2005-2008

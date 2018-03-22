@@ -1,0 +1,12 @@
+dnl $ZEL: configure.in,v 1.1 2002/02/27 09:57:38 wuestner Exp $
+dnl Process this file with autoconf to produce a configure script.
+
+AC_INIT(sis1100_init.c)
+
+dnl Checks for programs.
+AC_CANONICAL_SYSTEM
+AC_PROG_MAKE_SET
+
+
+dnl AC_CONFIG_HEADER(config.h)
+AC_OUTPUT(Makefile)

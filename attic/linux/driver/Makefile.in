@@ -1,0 +1,107 @@
+# $ZEL: Makefile.in,v 1.5 2003/01/09 12:13:15 wuestner Exp $
+
+MODULENAME = SIS1100
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+@SET_MAKE@
+
+cfiles = pcisupport_linux2.4.c \
+    sis1100_linux_init.c \
+    sis1100_init.c \
+    sis1100_open.c \
+    sis1100_reset.c \
+    sis1100_irq.c \
+    sis1100_irq_handler.c \
+    sis1100_lemo_handler.c \
+    sis1100_synch_handler.c \
+    sis3100rem_irq.c \
+    sis5100rem_irq.c\
+    sis1100_init_remote.c \
+    sis1100rem_init.c \
+    sis3100rem_init.c \
+    sis5100rem_init.c \
+    sis1100_init_sdram.c \
+    sis1100_ioctl.c \
+    sis1100_mmap.c \
+    sis1100_read.c \
+    sis1100_pipe.c \
+    sis1100_tmp_read.c \
+    sis1100_tmp_write.c \
+    sis1100_read_dma.c \
+    sis1100_write_dma.c \
+    sis1100_read_loop.c \
+    sis1100_write_loop.c \
+    sis1100_block_read.c \
+    sis3100_sharc_read.c \
+    sis1100_front_io.c \
+    sis3100rem_front_io.c \
+    sis5100rem_front_io.c \
+    sis1100_sgl_map_user.c
+
+target = sis1100
+
+all: $(target).o load_module
+
+KERNEL = /usr/src/linux
+ARCH=$(shell uname -m|sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/)
+LINUXINCLUDE  = $(KERNEL)/include
+
+DRIVERINCLUDE = $(srcdir)/..
+COMMONINCLUDE = $(srcdir)/../../common
+
+CFLAGS = -Wall -Wstrict-prototypes\
+ -Wimplicit -Wunused -Wcomment -Wformat\
+ -Wuninitialized -Werror -Wno-trigraphs \
+ -fomit-frame-pointer -fno-strict-aliasing -fno-common\
+ -O2
+
+CPPFLAGS = -D__KERNEL__ -DMODULE -DMODULENAME=$(MODULENAME)\
+ -I$(COMMONINCLUDE) -I$(DRIVERINCLUDE) -I$(LINUXINCLUDE)
+
+include $(KERNEL)/.config
+ifdef CONFIG_VISWS
+MACHINE := mach-visws
+else
+MACHINE := mach-generic
+endif
+
+CFLAGS += -I$(KERNEL)/arch/$(ARCH)/$(MACHINE)
+
+ofiles = $(cfiles:.c=.o)
+depfiles = $(cfiles)
+
+load_module:
+	ln -s $(srcdir)/load_module
+
+$(target).o: $(ofiles)
+	$(LD) -r -o $@ $^
+
+clean:
+	rm -f *.o core
+
+realclean:  clean
+	cp Makefile Makefile.bak
+	sed -e '/^# DO NOT DELETE THIS LINE/,$$d' < Makefile.bak > Makefile
+	echo '# DO NOT DELETE THIS LINE' >> Makefile
+	echo ' ' >> Makefile
+	rm Makefile.bak
+
+distclean:  clean
+	rm -f *.bak *.bck Makefile
+	rm -f config.status configure config.cache config.log
+
+depend:
+	cp Makefile Makefile.bak
+	sed -e '/^# DO NOT DELETE THIS LINE/,$$d' < Makefile.bak > Makefile
+	echo '# DO NOT DELETE THIS LINE' >> Makefile
+	echo ' ' >> Makefile
+	for i in $(depfiles) ; do \
+	  echo checking $$i ; \
+	  $(CC) -M $(CFLAGS) $(CPPFLAGS) $(srcdir)/$$i >> Makefile ; \
+	done
+
+include $(KERNEL)/arch/$(ARCH)/Makefile
+
+# DO NOT DELETE THIS LINE
+ 

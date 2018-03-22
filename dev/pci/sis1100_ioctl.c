@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_ioctl.c,v 1.30 2010/06/17 18:10:23 wuestner Exp $ */
+/* $ZEL: sis1100_ioctl.c,v 1.31 2016/03/16 19:33:21 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2009
