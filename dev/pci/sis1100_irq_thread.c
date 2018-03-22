@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_irq_thread.c,v 1.26 2010/06/17 18:12:03 wuestner Exp $ */
+/* $ZEL: sis1100_irq_thread.c,v 1.25 2010/01/24 21:04:26 wuestner Exp $ */
 
 /*
  * Copyright (c) 2002-2009
@@ -107,8 +107,7 @@ _sis1100_irq_thread(struct sis1100_softc* sc, enum handlercomm command)
             if (fd->sig>0 && ((new_irqs & fd->owned_irqs)||
                               (fd->old_remote_hw!=sc->remote_hw))) {
                 int res;
-#if 0
-                /* XXXY muss raus */
+#ifdef DEBUG
                 pERROR(sc, "irq_pending=%d pending_irqs=0x%x",
                         irq_pending(sc, fd, fd->owned_irqs),
                         sc->pending_irqs);
@@ -116,7 +115,6 @@ _sis1100_irq_thread(struct sis1100_softc* sc, enum handlercomm command)
                         fd->sig, new_irqs, fd->owned_irqs);
                 pERROR(sc, "old_remote_hw=%d remote_hw=%d",
                         fd->old_remote_hw, sc->remote_hw);
-                /* XXXY muss raus */
                 pERROR(sc, "send sig to %d", pid_nr(fd->pid));
 #endif
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,27)

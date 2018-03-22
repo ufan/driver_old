@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_init.c,v 1.28 2010/06/06 21:23:17 wuestner Exp $ */
+/* $ZEL: sis1100_init.c,v 1.27 2010/01/18 11:11:33 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2008
@@ -247,7 +247,7 @@ sis1100_init(struct sis1100_softc* sc)
     case 0x00010100: /* classical PCI device */
         MIN_FV=4;
         MAX_FV=7;
-        expected_pci_id=PCI_PRODUCT_FZJZEL_GIGALINK;
+        expected_pci_id=0x0001;
 #if 1
         sc->broken.d16_dma=1; /* firmware bug */
         sc->broken.d8_dma=1;  /* firmware bug */
@@ -256,12 +256,12 @@ sis1100_init(struct sis1100_softc* sc)
     case 0x00010200: /* PCIe device with piggyback */
         MIN_FV=1;
         MAX_FV=1;
-        expected_pci_id=PCI_PRODUCT_FZJZEL_SIS1100_eCMC;
+        expected_pci_id=0x000e;
         break;
     case 0x00020200: /* PCIe device with four links, only first link used */
         MIN_FV=1;
-        MAX_FV=5;
-        expected_pci_id=PCI_PRODUCT_FZJZEL_SIS1100_eSINGLE;
+        MAX_FV=2;
+        expected_pci_id=0x0011;
         sc->sendfifo_size=4096;
         sc->sendfifo_of=sc->sendfifo_size-128;
         /*sc->broken.swap_doorbell=1;*/
@@ -269,17 +269,10 @@ sis1100_init(struct sis1100_softc* sc)
     case 0x00220200: /* 2G 1100ecmc */
         MIN_FV=1;
         MAX_FV=2;
-        expected_pci_id=PCI_PRODUCT_FZJZEL_SIS1100_eSINGLE;
+        expected_pci_id=0x0011;
         sc->sendfifo_size=4096;
         sc->sendfifo_of=sc->sendfifo_size-128;
         pINFO(sc, "2GBit link!");  
-        break;
-    case 0x00020300: /* utca */
-        MIN_FV=5;
-        MAX_FV=5;
-        expected_pci_id=PCI_PRODUCT_FZJZEL_SIS8100;
-        sc->sendfifo_size=4096;
-        sc->sendfifo_of=sc->sendfifo_size-128;
         break;
     default:
         pERROR(sc, "Hard- or Firmware not known");
@@ -390,8 +383,7 @@ sis1100_init(struct sis1100_softc* sc)
 
     /* enable IRQs */
     sis1100_disable_irq(sc, 0xffffffff, 0xffffffff);
-    sis1100_enable_irq(sc, plxirq_pci|plxirq_mbox|plxirq_pwr|plxirq_doorbell|
-            plxirq_local,
+    sis1100_enable_irq(sc, plxirq_pci|plxirq_mbox|plxirq_doorbell|plxirq_local,
 	    irq_synch_chg|irq_inh_chg|irq_sema_chg|
 	    irq_rec_violation|irq_reset_req);
 

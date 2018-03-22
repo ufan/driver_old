@@ -1,0 +1,73 @@
+Analog Devices ADSP-210x0 Linker             imago.map                Page 1
+Release 3.3, Version 2.21                    Wed Jun 05 09:12:12 2002
+Copyright (c) 1991-1996 Analog Devices, Inc.
+ 
+ 
+Architecture Description: ADSP21061_PROM_Boot_Loader_Architecture
+ 
+Segment     Start     End       Length      Memory Type          Attribute    Width
+ 
+seg_irqv    020000    0200ff    256         Program Memory       RAM
+seg_pm1     020100    021fff    7936        Program Memory       RAM
+seg_dm1     00023000  00023fff  4096        Data Memory          RAM
+seg_pm2     024000    025fff    8192        Program Memory       RAM
+seg_dm2     00027000  00027fff  4096        Data Memory          RAM
+ 
+ 
+Memory Usage (Actual):
+ 
+Segment     Start     End       Length      Memory Type          Attribute
+ 
+seg_irqv    ******    ******    0           Program Memory       RAM
+seg_pm1     020100    0201a5    166         Program Memory       RAM
+seg_pm2     ******    ******    0           Program Memory       RAM
+seg_dm1     ********  ********  0           Data Memory          RAM
+seg_dm2     ********  ********  0           Data Memory          RAM
+ 
+ 
+Memory Usage Summaries:
+ 
+Memory Type     Attribute  Total
+ 
+Program Memory  ROM        0
+Program Memory  RAM        166
+Program Memory  PORT       0
+Data Memory     ROM        0
+Data Memory     RAM        0
+Data Memory     PORT       0
+ 
+ 
+Cross Reference for file -> imago.obj:
+ 
+Symbol                             Type  Address   Class
+ 
+Hit_Wait                           PM      020136  static
+IRQSETUP                           PM      020105  static
+LOOP_START                         PM      020124  static
+Mirrow_IRQ1_Vector                 PM      020101  static
+NOBUFCHNG                          PM      0201a2  static
+Start                              PM      020100  static
+VMEHITWAIT                         PM      020138  static
+VMEWAIT1                           PM      020143  static
+VMEWAIT10                          PM      02017b  static
+VMEWAIT11                          PM      02017f  static
+VMEWAIT12                          PM      020186  static
+VMEWAIT13                          PM      0201a2  static
+VMEWAIT2                           PM      020147  static
+VMEWAIT3                           PM      02014d  static
+VMEWAIT4                           PM      020156  static
+VMEWAIT5                           PM      02015a  static
+VMEWAIT6                           PM      020160  static
+VMEWAIT7                           PM      020169  static
+VMEWAIT8                           PM      02016d  static
+VMEWAIT9                           PM      020173  static
+WAITBK0                            PM      020196  static
+WAITBK1                            PM      02019e  static
+WASBUF0                            PM      02019b  static
+Analog Devices ADSP-210x0 Linker             imago.map                Page 2
+Release 3.3, Version 2.21                    Wed Jun 05 09:12:12 2002
+Copyright (c) 1991-1996 Analog Devices, Inc.
+ 
+ 
+ 
+ 

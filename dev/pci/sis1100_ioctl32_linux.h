@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_ioctl32_linux.h,v 1.6 2010/08/02 19:25:38 wuestner Exp $ */
+/* $ZEL: sis1100_ioctl32_linux.h,v 1.5 2009/03/12 13:24:07 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2004
@@ -190,9 +190,7 @@ struct sis1100_32_ddma_stop {
 #define SIS1100_32_DEMAND_DMA_START _IO  (GLINK_MAGIC, 40)
 #define SIS1100_32_DEMAND_DMA_STOP _IOWR(GLINK_MAGIC, 41, struct sis1100_32_ddma_stop)
 #define SIS1100_32_DEMAND_DMA_MARK _IOW (GLINK_MAGIC, 42, compat_int_t)
-#if 0
 #define SIS1100_32_DEMAND_DMA_WAIT _IOWR(GLINK_MAGIC, 43, compat_int_t)
-#endif
 #define SIS3100_32_VME_WRITE_BLIND _IOWR(GLINK_MAGIC, 44, struct sis1100_32_vme_req)
 
 #define SIS1100_32_SERIAL_NO       _IOR (GLINK_MAGIC, 45, u_int32_t[4])

@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # These definitions must match the definitions in sis1100_var.h
-MINORBITS=8
-MINORCARDBITS=2
+MINORBITS=9
+MINORCARDBITS=4
 MINORTYPEBITS=2
 MINORUSERBITS=`expr $MINORBITS - $MINORCARDBITS - $MINORTYPEBITS`
 
@@ -10,7 +10,7 @@ MINORUSERBITS=`expr $MINORBITS - $MINORCARDBITS - $MINORTYPEBITS`
 
 # number of cards we really want to use
 MAXCARDS=4
-# how often we want to open the same device
+# how often we want to open the same device (max 32)
 MAXUSER=2
 
 modulename=sis1100

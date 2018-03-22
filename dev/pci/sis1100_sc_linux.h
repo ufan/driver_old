@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_sc_linux.h,v 1.29 2010/04/19 14:19:08 wuestner Exp $ */
+/* $ZEL: sis1100_sc_linux.h,v 1.28 2009/06/05 15:59:44 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2008
@@ -93,11 +93,14 @@ struct demand_dma_block {
     struct sg_table table;
     int dsegs; /* number of pages for PLX descriptors */
     struct sis1100_dmapage* desc_pages;
-    struct sis1100_dmabuf buf; /* used for dummyblock */
     u_int32_t dmadpr0;
     struct timespec time;
 /* LLLL1 */
-    enum dmablock_status status;
+    enum dmablockstatus status;
+    int seq_write_start;
+    int seq_write_end;
+    int seq_signal;
+    int seq_free;
 /* LLLL0 */
 };
 
@@ -108,20 +111,18 @@ struct demand_dma {
     spinlock_t spin;              /* protects members between LLLL1 and LLLL0
                                      during runtime of DMA */
 
-    enum ddmastatus status;       /* invalid | ready | running */
+    enum dmastatus status;        /* invalid | ready | running */
     struct sis1100_fdata *owner;
     char* uaddr;                  /* user virtual address of the first block */
     size_t size;                  /* size of ONE block of mapped user pages */
     int numblocks;                /* number of blocks */
     struct demand_dma_block* block; /* array of block descriptions */
-    struct demand_dma_block dummyblock; /* for safe aborting */
-    
 /* LLLL1 */
-    enum ddmablstatus blstat;     /* running, blocked, aborting */
-    //int is_blocked;             /* all buffers are full, DMA is stopped */
+    int is_blocked;               /* all buffers are full, DMA is stopped */
     int writing_block;            /* block currently written by DMA or
                                      waiting until free */
     int reading_block;            /* last block given to user */
+    int debug_sequence;           /* counter, incremented after each DMA-block */
 /* LLLL0 */
 };
 
@@ -145,7 +146,7 @@ struct sis1100_softc {
     struct cdev cdev;
     int unit;
     struct task_struct* handler;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,11)
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,11))
     struct sched_param sched_param;
 #endif
     struct sis1100_dmabuf dmaspace;

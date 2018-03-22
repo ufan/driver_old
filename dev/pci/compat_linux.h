@@ -1,4 +1,4 @@
-/* $ZEL: compat_linux.h,v 1.25 2010/04/19 13:24:02 wuestner Exp $ */
+/* $ZEL: compat_linux.h,v 1.24 2009/08/31 15:13:37 wuestner Exp $ */
 
 /*
  * Copyright (c) 2003-2008
@@ -135,10 +135,6 @@ int sg_alloc_table(struct sg_table *, unsigned int, gfp_t);
 	(sg)->length = _len;                  \
     } while (0)
 
-#endif
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,25)
-#define __devinitconst
 #endif
 
 #ifndef DMA_BIT_MASK

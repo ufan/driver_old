@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_irq.c,v 1.24 2010/06/06 21:23:52 wuestner Exp $ */
+/* $ZEL: sis1100_irq.c,v 1.23 2010/01/18 11:15:31 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2007

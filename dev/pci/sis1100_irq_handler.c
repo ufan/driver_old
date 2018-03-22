@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_irq_handler.c,v 1.30 2010/06/17 18:11:30 wuestner Exp $ */
+/* $ZEL: sis1100_irq_handler.c,v 1.27 2010/01/18 18:48:03 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2004
@@ -39,7 +39,7 @@ reserve_irq(struct sis1100_fdata* fd, u_int32_t mask)
 
     mutex_lock(&sc->sem_fdata);
 #if 0
-    /* XXX muss raus */
+    /* XXXY muss raus */
     for (i=0; i<sis1100_MINORUTMASK+1; i++) {
         if (sc->fdata[i]) {
             struct sis1100_fdata* fdi=sc->fdata[i];
@@ -111,6 +111,20 @@ _sis1100_irq_ack(struct sis1100_fdata* fd, u_int32_t irqs)
     case sis1100_hw_lvd:
         if (irqs&0x3fffffff)
             zellvd_rem_irq_ack(sc, irqs);
+        if (sc->demand_dma.status==dma_running) {
+            /* set pending_irqs again if further DMA blocks are available */
+            DECLARE_SPINLOCKFLAGS(flags)
+            struct demand_dma* dma=&sc->demand_dma;
+            int nextblock;
+
+            SPIN_LOCK_IRQSAVE(dma->spin, flags);
+            nextblock=dma->reading_block+1;
+            if (nextblock>=dma->numblocks) nextblock=0;
+            if (dma->block[nextblock].status==dmablock_Xfull) {
+                sc->pending_irqs|=ZELLVD_DDMA_IRQ;
+            }
+            SPIN_UNLOCK_IRQRESTORE(dma->spin, flags);
+        }
         break;
     case sis1100_hw_pandapixel:
         /* do nothing */
@@ -160,13 +174,11 @@ sis1100_irq_ctl(struct sis1100_fdata* fd, struct sis1100_irq_ctl2* data)
         if ((res=reserve_irq(fd, data->irq_mask)))
             return res;
 
-        if ((!data->flags&SIS1100_IRQCTL_NOCLEAR)) {
-            mutex_lock(&sc->sem_irqinfo);
-            res=_sis1100_irq_ack(fd, data->irq_mask);
-            mutex_unlock(&sc->sem_irqinfo);
-            if (res)
-                return res;
-        }
+        mutex_lock(&sc->sem_irqinfo);
+        res=_sis1100_irq_ack(fd, data->irq_mask);
+        mutex_unlock(&sc->sem_irqinfo);
+        if (res)
+            return res;
 
         fd->sig=data->signal;
         fd->old_remote_hw=sc->remote_hw;
@@ -181,19 +193,7 @@ sis1100_irq_ctl(struct sis1100_fdata* fd, struct sis1100_irq_ctl2* data)
             sis5100rem_enable_irqs(sc, fd, data->irq_mask);
             break;
         case sis1100_hw_pci:     break; /* do nothing */
-        case sis1100_hw_lvd:
-            if (!(data->irq_mask&ZELLVD_DDMA_IRQ))
-                break;
-            if (sc->demand_dma.status!=ddma_running || sc->demand_dma.owner!=fd)
-                break;
-            if (sc->demand_dma.blstat==ddmabl_blocked) {
-                DECLARE_SPINLOCKFLAGS(flags)
-                SPIN_LOCK_IRQSAVE(sc->handlercommand.lock, flags);
-                sc->pending_irqs|=ZELLVD_DDMA_IRQ;
-                SPIN_UNLOCK_IRQRESTORE(sc->handlercommand.lock, flags);
-                wake_up_process(sc->handler);
-            }
-            break;
+        case sis1100_hw_lvd:     break; /* nothing to be done */
         case sis1100_hw_pandapixel: break; /* nothing to be done ??? */
         case sis1100_hw_psf4ad:  break; /* nothing to be done */
         case sis1100_hw_invalid: break; /* do nothing */
@@ -256,13 +256,12 @@ int
 sis1100_irq_get(struct sis1100_fdata* fd, struct sis1100_irq_get2* data)
 {
     struct sis1100_softc* sc=fd->sc;
-    u_int32_t mask, masked_irqs;
+    u_int32_t mask;
     int res=0, i;
 
     mutex_lock(&sc->sem_irqinfo);
 
     data->irqs=sc->pending_irqs & fd->owned_irqs;
-    masked_irqs=data->irqs & data->irq_mask;
     if (fd->old_remote_hw!=sc->remote_hw) {
         if (sc->remote_hw!=sis1100_hw_invalid)
             data->remote_status=1;
@@ -279,54 +278,50 @@ sis1100_irq_get(struct sis1100_fdata* fd, struct sis1100_irq_get2* data)
     data->level=0;
     data->vector=0;
 
-    if (!masked_irqs)
+    if (!data->irqs)
         goto exit;
 
-    /* copy time of IRQ with highest bit in data->irqs & data->irq_mask */
-    for (mask=masked_irqs, i=31; !(mask&0x80000000); mask<<=1, i--);
+    /* copy time of IRQ with highest bit in data->irqs */
+    for (mask=data->irqs, i=31; !(mask&0x80000000); mask<<=1, i--);
     data->irq_sec=sc->irqtimes[i].tv_sec;
     data->irq_nsec=sc->irqtimes[i].tv_nsec;
 
     switch (sc->remote_hw) {
     case sis1100_hw_vme:
         if (data->irqs & SIS3100_VME_IRQS)
-            sis3100rem_get_vector(sc, masked_irqs, data);
+            sis3100rem_get_vector(sc, data->irqs & data->irq_mask, data);
         break;
     case sis1100_hw_lvd:
-        if (sc->demand_dma.status==ddma_running) {
+        if (sc->demand_dma.status==dma_running) {
             struct demand_dma* dma=&sc->demand_dma;
-            struct demand_dma_block *block;
-
-            block=dma->block+dma->reading_block;
-            if (!(block->status&dmablock_full)) {
-                pERROR(sc, "irq_get: block %d has status %d",
-                        dma->reading_block, block->status);
-                data->vector=-1;
-                break;
-            }
-
-            /* already synced? */
-            if (!(block->status&dmablock_synced)) {
+            int nextblock=dma->reading_block+1;
+            if (nextblock>=dma->numblocks) nextblock=0;
+            if (dma->block[nextblock].status==dmablock_Xfull) {
+                /* synchronize dma buffer before user can access the data */
                 pci_dma_sync_sg_for_cpu(sc->pdev,
-                        block->table.sgl,
-		        block->table.nents, DMA_FROM_DEVICE);
-                block->status|=dmablock_synced;
+                        dma->block[nextblock].table.sgl,
+		        dma->block[nextblock].table.nents, DMA_FROM_DEVICE);
+                data->vector=nextblock;
+                data->irq_sec=dma->block[nextblock].time.tv_sec;
+                data->irq_nsec=dma->block[nextblock].time.tv_nsec;
+                dma->block[nextblock].status=dmablock_Xuser;
+                dma->block[nextblock].seq_signal=dma->debug_sequence;
+                dma->reading_block=nextblock;
             } else {
-#if 0
-                pERROR(sc, "irq_get: block %d already synced, writing at %d",
-                        dma->reading_block, dma->writing_block);
-#endif
+                pERROR(sc, "sis1100_irq_get: block %d is not ready for read",
+                        nextblock);
+                data->vector=-1;
             }
-            data->vector=dma->reading_block;
-            data->irq_sec=block->time.tv_sec;
-            data->irq_nsec=block->time.tv_nsec;
+#if (IRQ_DEBUG)
+            pERROR(sc, "sis1100_irq_get: vector=%d", data->vector);
+#endif
         }
         break;
     default: /* do nothing */
         {}
     }
 
-    mask=sc->autoack_mask & masked_irqs;
+    mask=sc->autoack_mask&data->irqs;
     if (mask)
         res=_sis1100_irq_ack(fd, mask);
 

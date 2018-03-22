@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_var.h,v 1.31 2010/12/07 22:43:27 wuestner Exp $ */
+/* $ZEL: sis1100_var.h,v 1.26 2010/01/18 19:04:14 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2009
@@ -29,13 +29,9 @@
 #ifndef _sis1100_var_h_
 #define _sis1100_var_h_
 
-#define SIS1100_MinVersion 15 /* 16 bit */
-#define SIS1100_SubVersion 0  /*  8 bit */
-#define SIS1100_MajVersion 2  /*  8 bit */
-#define SIS1100_Version        \
-   ((SIS1100_MajVersion<<16) | \
-    (SIS1100_MinVersion<<8)  | \
-    (SIS1100_SubVersion))
+#define SIS1100_MinVersion (13<<8)
+#define SIS1100_MajVersion 2
+#define SIS1100_Version (SIS1100_MinVersion|(SIS1100_MajVersion<<16))
 
 #ifdef __NetBSD__
 #include <sys/types.h>
@@ -52,7 +48,7 @@
  */
 
 /* used bits of minor number */
-#define sis1100_MINORBITS 8
+#define sis1100_MINORBITS 9
 /* bits used for cardnumber, number_of_cards<=(1<<MINORCARDBITS) */
 #define sis1100_MINORCARDBITS 4
 /* type 0: VME; type 1: SDRAM; type 2: sis1100_control; type 3: dsp*/
@@ -237,8 +233,7 @@ struct sis1100_irq_ctl2 {
     int32_t   signal;  /* >0: signal; ==0: disable; <0: no signal but select */
     /* the fields above this line have to match sis1100_irq_ctl */
     u_int32_t auto_mask; /* these IRQs are automatically reenabled */
-    u_int32_t flags;     /* see below */
-#define SIS1100_IRQCTL_NOCLEAR 0x1 /* don't clear pending IRQs */
+    u_int32_t flags;     /* for future use, should be zero */
 };
 
 struct sis1100_irq_get {
@@ -378,7 +373,7 @@ struct sis1100_ddma_stop {
 #define SIS1100_DSP_RESET       _IO  (GLINK_MAGIC, 36)
 #define SIS1100_DSP_START       _IO  (GLINK_MAGIC, 37)
 
-#define SIS1100_CARD_IDX        _IOR (GLINK_MAGIC, 38, int)
+/*#define SIS1100_CARD_IDX        _IOR (GLINK_MAGIC, 38, int)*/
 
 #define SIS1100_DEMAND_DMA_MAP   _IOW (GLINK_MAGIC, 39, struct sis1100_ddma_map)
 #define SIS1100_DEMAND_DMA_START _IO  (GLINK_MAGIC, 40)
@@ -417,7 +412,6 @@ struct sis1100_ddma_stop {
 #define SIS1100_PLX_WRITE       _IOWR(GLINK_MAGIC, 114, struct sis1100_ctrl_reg)
 #define SIS1100_EEPROM_SIZE     _IOR (GLINK_MAGIC, 115, int)
 #define SIS1100_TESTFLAGS       _IOWR(GLINK_MAGIC, 120, u_int32_t)
-#define SIS1100_TESTACTION      _IOWR(GLINK_MAGIC, 121, u_int32_t)
 #define SIS1100_TRANSPARENT     _IOWR(GLINK_MAGIC, 130, int32_t)
 
 #ifndef PURE_SIS1100_NAMESPACE

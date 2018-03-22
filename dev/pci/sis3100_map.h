@@ -1,4 +1,4 @@
-/* $ZEL: sis3100_map.h,v 1.7 2010/06/17 18:13:35 wuestner Exp $ */
+/* $ZEL: sis3100_map.h,v 1.6 2009/02/09 22:56:03 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2004
@@ -108,9 +108,8 @@ struct sis3100_reg {
 #define vme_request_level     (3<<4)
 #define vme_requester_type    (1<<6)
 #define vme_user_led          (1<<7)    /* SIS3100 only */
-#define vme_enable_retry      (1<<8)
-#define vme_disable_retry     (1<<9)    /* SIS3104 old firmware only */
-#define vme_unused            (1<<9)    /* (mis)used for init check */
+#define vme_enable_retry      (1<<8)    /* SIS3100 only */
+#define vme_disable_retry     (1<<9)    /* SIS3104 only */
 #define vme_force_dearbit     (1<<10)   /* SIS3104 only */
 #define vme_long_timer        (3<<12)
 #define vme_berr_timer        (3<<14)

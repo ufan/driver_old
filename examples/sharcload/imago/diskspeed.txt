@@ -1,0 +1,29 @@
+mki:/home/mki/sis1100/imago # ./imago
+Read configuration file: imago.conf
+DSP path: imagoasm/imago.ldr
+resetting SHARC DSP
+loader file imagoasm/imago.ldr opened
+load file length: 2047
+loading SHARC DSP
+starting SHARC DSP
+main loop
+bank 0 flag: 655360
+blt0 data: 0x       0
+blt0 data: 0x     94f
+blt0 data: 0x     94f
+blt0 data: 0x     94f
+blt0 data: 0x     956
+Don Jun  6 13:12:50 CEST 2002
+Don Jun  6 13:13:03 CEST 2002
+written: 2048
+bank 1 flag: 655360
+blt1 data: 0x       0
+blt1 data: 0x     94c
+blt1 data: 0x     94d
+blt1 data: 0x     94d
+blt1 data: 0x     94f
+written: 2048
+
+mki:/home/mki/sis1100/imago # ls -l diskfile
+-rw-r--r--    1 root     root     211812352 Jun  6 13:13 diskfile
+mki:/home/mki/sis1100/imago #

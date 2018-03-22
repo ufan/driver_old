@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_sc.h,v 1.38 2010/04/19 14:20:53 wuestner Exp $ */
+/* $ZEL: sis1100_sc.h,v 1.37 2010/01/18 19:02:35 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2008
@@ -42,8 +42,8 @@
 #include "sis1100_var.h"
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0)
-#include "uapi/linux/sched/types.h"
-#include "sched/signal.h"
+ #include "uapi/linux/sched/types.h"
+ #include "sched/signal.h"
 #endif
 
 /* 16NOV2016 For FEDORA23_Kernel4.2.3.300 */
@@ -67,10 +67,6 @@
 /* PCIe device with four links */
 #ifndef PCI_PRODUCT_FZJZEL_SIS1100_eQUAD
 #   define PCI_PRODUCT_FZJZEL_SIS1100_eQUAD 0x0012
-#endif
-/* SIS Advanced Mezzanine Card for MicroTCA (AMC Glinks) */
-#ifndef PCI_PRODUCT_FZJZEL_SIS8100
-#   define PCI_PRODUCT_FZJZEL_SIS8100 0x0015
 #endif
 
 struct irq_vects {
@@ -102,27 +98,18 @@ enum handlercomm {
 #endif
 };
 
-enum ddmastatus {
-    ddma_invalid,
-    ddma_ready,
-    ddma_running
+enum dmastatus {
+    dma_invalid,
+    dma_ready,
+    dma_running
 };
 
-enum ddmablstatus {
-    ddmabl_running,
-    ddmabl_blocked,
-    ddmabl_aborting
+enum dmablockstatus {
+    dmablock_Xfree=0, /* free */
+    dmablock_Xdma=1,  /* currently in use for DMA*/
+    dmablock_Xfull=2, /* full */
+    dmablock_Xuser=4  /* full and given to user */
 };
-
-enum dmablock_status {
-    dmablock_free=0,   /* free */
-    dmablock_dma=1,    /* currently in use for DMA*/
-    dmablock_full=2,   /* full */
-    dmablock_synced=4  /* full and synchronized */
-};
-
-#define DMA_NEXT(x) \
-    (((x)+1==sc->demand_dma.numblocks)?0:(x)+1)
 
 #define SIS5100_CAMACaddr(N, A, F) \
         (((F)&0x1f)<<11 | ((N)&0x1f)<<6 | ((A)&0xf)<<2)
@@ -141,9 +128,9 @@ enum dmablock_status {
 #endif
 
 #define SWAP32(a) ( (((u_int32_t)(a) << 24) & 0xff000000) | \
-                    (((u_int32_t)(a) <<  8) & 0x00ff0000) | \
-                    (((u_int32_t)(a) >>  8) & 0x0000ff00) | \
-                    (((u_int32_t)(a) >> 24) & 0x000000ff) )
+                    (((u_int32_t)(a) << 8) & 0x00ff0000) | \
+                    (((u_int32_t)(a) >> 8) & 0x0000ff00) | \
+                    (((u_int32_t)(a) >>24) & 0x00000ff0) )
 
 #define irq_pending(sc, fd, mask) \
     ((sc->pending_irqs & (fd->owned_irqs & mask)) || \
@@ -371,18 +358,12 @@ int sis1100_ddma_stop(struct sis1100_softc* sc, struct sis1100_fdata* fd,
     struct sis1100_ddma_stop*);
 int sis1100_ddma_mark(struct sis1100_softc* sc, struct sis1100_fdata* fd,
     unsigned int* block);
-#if 0
 int sis1100_ddma_wait(struct sis1100_softc* sc, struct sis1100_fdata* fd,
     unsigned int* block);
-#endif
 void sis1100_ddma_zero(struct demand_dma_block* block);
 void sis1100_ddma_unmap_block(struct sis1100_softc *sc,
     struct demand_dma_block* block);
 int sis1100_ddma_map_block(struct sis1100_softc *sc,
-    struct demand_dma_block* block);
-int sis1100_ddma_alloc_dummyblock(struct sis1100_softc *sc,
-    struct demand_dma_block* block);
-void sis1100_ddma_free_dummyblock(struct sis1100_softc *sc,
     struct demand_dma_block* block);
 
 int sis1100_read_eeprom(struct sis1100_softc* sc,

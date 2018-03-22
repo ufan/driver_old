@@ -28,10 +28,6 @@
 
 #include "sis1100_sc.h"
 
-#ifndef VM_RESERVED
-#define VM_RESERVED (VM_DONTEXPAND | VM_DONTDUMP)
-#endif
-
 /*
  * this is a macro because of different types used by linux and BSD
  */
@@ -86,6 +82,10 @@ sis1100_mmap(dev_t handle, off_t off, int prot)
 }
 
 #elif __linux__
+
+#ifndef VM_RESERVED
+ #define VM_RESERVED (VM_DONTEXPAND | VM_DONTDUMP)
+#endif
 
 int
 sis1100_mmap(struct file * file, struct vm_area_struct * vma)

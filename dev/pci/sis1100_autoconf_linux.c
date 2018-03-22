@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_autoconf_linux.c,v 1.43 2010/12/07 22:43:27 wuestner Exp $ */
+/* $ZEL: sis1100_autoconf_linux.c,v 1.37 2010/01/21 21:49:26 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2009
@@ -35,8 +35,13 @@ struct sis1100_global {
 #endif
 } sis1100_global;
 
-
-struct pci_device_id sis1100_table[]={
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,8,0)
+struct pci_device_id sis1100_table[] ={
+#elif LINUX_VERSION_CODE > KERNEL_VERSION(2,6,18)
+struct pci_device_id sis1100_table[] __devinitconst={
+#else
+struct pci_device_id sis1100_table[] __devinit={
+#endif
     {
     PCI_VENDOR_FZJZEL, PCI_PRODUCT_FZJZEL_GIGALINK,
     PCI_ANY_ID, PCI_ANY_ID,
@@ -55,12 +60,6 @@ struct pci_device_id sis1100_table[]={
     0, 0,
     0
     },
-    {
-    PCI_VENDOR_FZJZEL, PCI_PRODUCT_FZJZEL_SIS8100,
-    PCI_ANY_ID, PCI_ANY_ID,
-    0, 0,
-    0
-    },
     { 0 }
 };
 MODULE_DEVICE_TABLE(pci, sis1100_table);
@@ -72,16 +71,13 @@ const char* subdevnames[4]={
     "dsp"
 };
 
-MODULE_AUTHOR("Old: Peter Wuestner <P.Wuestner@fz-juelich.de>");
+MODULE_AUTHOR("SISWebsite: Peter Wuestner <P.Wuestner@fz-juelich.de>");
 MODULE_DESCRIPTION("SIS1100 PCI-VME link/interface");
 MODULE_LICENSE("Dual BSD/GPL");
-MODULE_SUPPORTED_DEVICE("sis1100/sis3100/sis5100/sis8100; "
-                        "http://www.struck.de/pcivme.htm");
+MODULE_SUPPORTED_DEVICE("sis1100/sis3100/sis5100; http://www.struck.de/pcivme.htm");
 
-/* XXX hier muss SIS1100_*Version aus sis1100_var.h benutzt werden */
-/* ==> replace DRIVER_VERSION by printf("%d.%02d", SIS1100_MajVersion, SIS1100_MinVersion) */
-//#define DRIVER_VERSION "2.14"
-#define DATE_STRING "2010-11-28"
+#define DRIVER_VERSION "2.13"
+#define DATE_STRING "2012-01-19"
 #define NAME_STRING "Forschungszentrum Juelich"
 
 struct sis1100_softc *sis1100_devdata[sis1100_MAXCARDS];
@@ -118,8 +114,7 @@ struct file_operations sis1100_fops = {
 ssize_t
 show_driver_version SHOW_ARGS(struct device* d, struct device_attribute *attr, char *buf)
 {
-    return snprintf(buf, PAGE_SIZE, "%d.%02d\n",
-            SIS1100_MajVersion, SIS1100_MinVersion);
+    return snprintf(buf, PAGE_SIZE, DRIVER_VERSION "\n");
 }
 ssize_t
 show_local_ident SHOW_ARGS(struct device* d, struct device_attribute *attr, char *buf)
@@ -156,16 +151,19 @@ show_remote_size SHOW_ARGS(struct device* d, struct device_attribute *attr, char
     return snprintf(buf, PAGE_SIZE, "0x%llx\n",
         (unsigned long long)pci_resource_len(sc->pdev, 3));
 }
-ssize_t
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,34)
+ssize_t
 show_version(struct class* c, struct class_attribute *attr, char *buf)
-#else
-show_version(struct class* c, char *buf)
-#endif
 {
-    return snprintf(buf, PAGE_SIZE, "%d.%02d\n",
-            SIS1100_MajVersion, SIS1100_MinVersion);
+    return snprintf(buf, PAGE_SIZE, DRIVER_VERSION "\n");
 }
+#else
+ssize_t
+show_version(struct class* c, char *buf)
+{
+    return snprintf(buf, PAGE_SIZE, DRIVER_VERSION "\n");
+}
+#endif
 
 static DEVICE_ATTR(driver_version, 0444, show_driver_version, 0);
 static DEVICE_ATTR(local_ident, 0444, show_local_ident, 0);
@@ -185,7 +183,11 @@ const char *subnames[4]={"remote", "ram", "ctrl", "dsp"};
 /*
  * sis1100_linux_init is called whenever a sis1100 PCI card is found
  */
-static int
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,8,0)
+ static int
+#else
+ static int __devinit
+#endif
 init_sis1100_device(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
         struct sis1100_softc *sc;
@@ -193,14 +195,9 @@ init_sis1100_device(struct pci_dev *pdev, const struct pci_device_id *ent)
 	int unit, res, i;
 
         switch (pdev->device) {
-        case PCI_PRODUCT_FZJZEL_GIGALINK:
-            cardname="SIS1100 PCI"; break;
-        case PCI_PRODUCT_FZJZEL_SIS1100_eCMC:
-            cardname="SIS1100 PCIe+Mezzanine"; break;
-        case PCI_PRODUCT_FZJZEL_SIS1100_eSINGLE:
-            cardname="SIS1100 PCIe single link"; break;
-        case PCI_PRODUCT_FZJZEL_SIS8100:
-            cardname="SIS8100 MicroTCA (AMC) card"; break;
+        case 0x1: cardname="SIS1100 PCI"; break;
+        case 0xe: cardname="SIS1100 PCIe+Mezzanine"; break;
+        case 0x11: cardname="SIS1100 PCIe single link"; break;
         default: cardname="unknown SIS1100";
         };
         pINFO(0, "sis1100: found %s at %s", cardname, pci_name(pdev));
@@ -249,7 +246,7 @@ init_sis1100_device(struct pci_dev *pdev, const struct pci_device_id *ent)
 	cdev_init(&sc->cdev, &sis1100_fops);
 	sc->cdev.owner = THIS_MODULE;
 
-        sc->demand_dma.status=ddma_invalid;
+        sc->demand_dma.status=dma_invalid;
         sc->plxirq_dma0_hook=0;
 
         sc->handler=kthread_create(sis1100_irq_thread, sc, "sis1100_%d",
@@ -303,8 +300,6 @@ init_sis1100_device(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (res) {
             pERROR(sc, "error installing irq");
             goto error_pci_iomap;
-        } else {
-            pDEBUG(sc, "IRQ %d installed", pdev->irq);
         }
 
         /* determine the PLX chip used (9054 or 9056(==8311)) */
@@ -320,7 +315,7 @@ init_sis1100_device(struct pci_dev *pdev, const struct pci_device_id *ent)
         } else
 #endif
         if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
-                /* pWARNING(sc, "64 Bit DMA not available"); */
+                pWARNING(sc, "64 Bit DMA not available");
                 sc->using_dac = 0;
                 sc->consistent_using_dac = 0;
                 pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
@@ -451,7 +446,11 @@ error:
  * during unload
  * (unload is forced e.g. by shutdown)
  */
-static void
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,8,0)
+ static void
+#else
+ static void __devexit
+#endif
 done_sis1100_device(struct pci_dev *pdev)
 {
 	struct sis1100_softc *sc;
@@ -518,9 +517,8 @@ init_sis1100_module(void)
 {
     	int res;
 
-        printk(KERN_INFO "SIS1100 driver V%d.%02d.%02d" 
-            " (c) " DATE_STRING " " NAME_STRING "\n",
-            SIS1100_MajVersion, SIS1100_MinVersion, SIS1100_SubVersion);
+        printk(KERN_INFO "SIS1100 driver V" DRIVER_VERSION
+            " (c) " DATE_STRING " " NAME_STRING "\n");
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,13)
         sis1100_global.class=class_create(THIS_MODULE, "sis1100");

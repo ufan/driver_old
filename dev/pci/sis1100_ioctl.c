@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_ioctl.c,v 1.30 2010/06/17 18:10:23 wuestner Exp $ */
+/* $ZEL: sis1100_ioctl.c,v 1.28 2010/01/18 19:24:52 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2009
@@ -255,13 +255,6 @@ ioctl_devtype(struct sis1100_fdata* fd, int* d)
 }
 
 static int
-ioctl_card_idx(struct sis1100_softc* sc, int* d)
-{
-    *d=sc->unit;
-    return 0;
-}
-
-static int
 ioctl_driverversion(int* d)
 {
     *d=SIS1100_Version;
@@ -336,10 +329,8 @@ ioctl_swap(struct sis1100_softc* sc, struct sis1100_fdata* fd, int* d)
     int old;
 
     old=sc->user_wants_swap;
-    if (*d>=0) {
-        sc->user_wants_swap=*d;
-        sis1100_update_swapping(sc);
-    }
+    sc->user_wants_swap=*d;
+    sis1100_update_swapping(sc);
     *d=old;
     return 0;
 }
@@ -717,8 +708,6 @@ ioctl_cnaf(struct sis1100_softc* sc, struct sis1100_fdata* fd,
 {
     u_int32_t addr;
 
-    if (sc->remote_hw!=sis1100_hw_camac)
-        return ENXIO;
     addr=SIS5100_CAMACaddr(d->N, d->A, d->F);
 
     switch (d->F&0x18) {
@@ -767,56 +756,6 @@ ioctl_testflags(struct sis1100_softc* sc, struct sis1100_fdata* fd,
         pERROR(sc, "setting testflags to 0x%08x", *d);
     sc->testflags=*d;
     *d=old;
-    return 0;
-}
-
-static int
-ioctl_testaction_ddma(struct sis1100_softc* sc, struct sis1100_fdata* fd)
-{
-    int i;
-
-    pERROR(sc, "dump demand DMA blocks:");
-    switch (sc->demand_dma.status) {
-    case ddma_invalid:
-        pERROR(sc, "  status: invalid");
-        return 0;
-    case ddma_ready:
-        pERROR(sc, "  status: ready");
-        break;
-    case ddma_running:
-        pERROR(sc, "  status: running");
-        break;
-    default:
-        pERROR(sc, "  unknown status %d", sc->demand_dma.status);
-        return 0;
-    }
-    pERROR(sc, "  num=%d size=%llu",
-        sc->demand_dma.numblocks, (unsigned long long)sc->demand_dma.size);
-    if (sc->demand_dma.status!=ddma_running)
-        return 0;
-
-    pERROR(sc, "  dma blocked: %d", sc->demand_dma.blstat);
-    for (i=0; i<sc->demand_dma.numblocks; i++) {
-        struct demand_dma_block *block=sc->demand_dma.block+i;
-        pERROR(sc, "  [%02d] %d%s%s",
-            i,
-            block->status,
-            i==sc->demand_dma.writing_block?" writing":"",
-            i==sc->demand_dma.reading_block?" reading":"");
-    }
-    return 0;
-}
-
-static int
-ioctl_testaction(struct sis1100_softc* sc, struct sis1100_fdata* fd,
-        u_int32_t* d)
-{
-    switch (*d) {
-    case 1:
-        return ioctl_testaction_ddma(sc, fd);
-    default:
-        pERROR(sc, "unknown testaction %d", *d);
-    }
     return 0;
 }
 
@@ -999,20 +938,15 @@ long _sis1100_ioctl(struct sis1100_softc* sc, struct sis1100_fdata* fd,
         res=sis1100_ddma_stop(sc, fd, (struct sis1100_ddma_stop*)data); break;
     case SIS1100_DEMAND_DMA_MARK:
         res=sis1100_ddma_mark(sc, fd, (int*)data); break;
-#if 0
     case SIS1100_DEMAND_DMA_WAIT:
         res=sis1100_ddma_wait(sc, fd, (int*)data); break;
-#endif
 
     case SIS1100_RESET:
         res=ioctl_reset(sc, fd); break;
     case SIS1100_REMOTE_RESET:
-        sis1100_init_remote(sc, 2); /* sis1100_init_remote returns void */
-        break;
+        sis1100_init_remote(sc, 2); break;
     case SIS1100_DEVTYPE:
         res=ioctl_devtype(fd, (int*)data); break;
-    case SIS1100_CARD_IDX:
-        res=ioctl_card_idx(sc, (int*)data); break;
     case SIS1100_DRIVERVERSION:
         res=ioctl_driverversion((int*)data); break;
     case SIS1100_READ_EEPROM:
@@ -1023,8 +957,6 @@ long _sis1100_ioctl(struct sis1100_softc* sc, struct sis1100_fdata* fd,
         res=ioctl_eeprom_size(sc, fd, (int*)data); break;
     case SIS1100_TESTFLAGS:
         res=ioctl_testflags(sc, fd, (u_int32_t*)data); break;
-    case SIS1100_TESTACTION:
-        res=ioctl_testaction(sc, fd, (u_int32_t*)data); break;
     case SIS1100_TRANSPARENT:
         res=sis1100_transparent(sc, fd, (int32_t*)data); break;
 
@@ -1088,7 +1020,7 @@ union all {
 };
 
 #define MAX_DATA (sizeof(union all))
-
+    
 #ifdef HAVE_UNLOCKED_IOCTL
 long
 sis1100_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
@@ -1109,7 +1041,7 @@ sis1100_ioctl(struct inode *inode, struct file *file,
         return -EINVAL;
     }
 
-    if (cmd&IOC_IN) {
+    if ((cmd&IOC_IN) && (_IOC_SIZE(cmd) <= MAX_DATA)) {
         if (copy_from_user(&data, (void *)arg, _IOC_SIZE(cmd)))
                 return -EFAULT;
     }

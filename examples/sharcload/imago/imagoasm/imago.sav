@@ -1,0 +1,252 @@
+/***************************************************************************/
+/*                                                                         */
+/*   Name:  imago.asm                                                      */
+/*                                                                         */
+/*   RSS SIS9200 DSP code                                                  */
+/*                                                                         */
+/*   Author: MKI                                                           */
+/*                                                                         */
+/*   Date: 29.04.2002  Imago D16 test code                                 */
+/*                                                                         */
+/*                                                                         */
+/* ----------------------------------------------------------------------- */
+/*                                                                         */
+/*                                                                         */
+/*  Copyright (c) 2002 SIS GmbH 22399 Hamburg.  All rights reserved.       */
+/*                                                                         */
+/*                                                                         */
+/***************************************************************************/
+
+/* header Dateien */	
+#include "..\header\def21060.h"
+#include "..\header\s3100def.h"
+
+/* */
+#define IRQ1_VECTOR_ADDR 0x0002001C
+			
+/* --- Defines fuer die SHARC-Adressen und Befehle ----------------------- */
+#define SYSCON  0x00    
+#define WAIT    0x02
+
+// Sharc Local defines
+#define LOC_SEQ_STATUS 				        0x01000000
+
+
+// Sharc VME MAster defines
+#define VME_DATA_FIFO_READ 			    	0x40000000
+#define VME_ONLY_ARBITRATION_CYCLE	    	        0x40080000
+#define VME_ONLY_RELEASE_MASTER_CYCLE		        0x40000000
+#define VME_DMA_CYCLE					0x40040000
+#define VME_SINGLE_CYCLE				0x40020000
+#define INTERNAL_SINGLE_CYCLE				0x40030000
+
+#define READ_FIFO_DISABLE 				0x00800000
+#define READ_FIFO_CLR_DISABLE   			0x00400000
+#define WORD_COUNT_CLR_DISABLE  			0x00200000    
+#define VME ADDR_INC_DISABLE 				0x00100000
+
+#define VME_HOLD_MASTER				        0x00080000
+#define VME_WRITE					      0x40
+#define VME_AM_F				      	      0x0F
+#define VME_AM_9				      	      0x09
+#define VME_AM_29				      	      0x29
+
+#define VME_WRITE_DATA_REG				0x20000001
+#define VME_DMA_MAX_WORDCOUNT				0x20000002
+#define VME_READ_DATA_REG				0x20000008
+
+
+// Sharc SDRAM defines
+#define SDRAM_BLT_BASE		 			0x80000000
+#define SDRAM_SGL_BASE		 			0xC0000000
+#define SDRAM_RD_ADD_WR_BASE 			   	0xE0000000
+#define SDRAM_RING_BASE                                 0xC0800000
+	
+#define SHARCIO 0x01000004
+
+	
+/* Macros */	
+#define nimpulse1(lbl) BIT CLR ASTAT 0x80000;  \
+lbl:	                                       \
+	                  BIT SET ASTAT 0x80000 
+
+/* --------------------------------------------------------------------------
+	Funktion zum VME schreiben
+ ------------------------------------------------------------------------- */
+.SEGMENT/PM     seg_pm1;
+			
+Start:
+	    JUMP (PC,IRQSETUP)	; 
+Mirrow_IRQ1_Vector:
+	    BIT CLR ASTAT 0x100000;
+	    BIT SET ASTAT 0x100000;
+	    JUMP (Irq_Service_IRQ1);
+	    RTI; 
+IRQSETUP:	
+	    M13=1		;
+	    I13=Mirrow_IRQ1_Vector;
+	    I14=IRQ1_VECTOR_ADDR	;
+	    /* copy 4 lines */
+	    LCNTR=0x4,DO(PC,2) UNTIL LCE;
+	    PX=PM(I13,M13)	;
+	    PM(I14,M13)=PX	;
+
+	    R12=0		; /* clear IRQ count */
+	    R11=10		; /* IRQ threshold   */
+	
+	    R6=0x2004EAA5 ;    
+		nop ;
+	    DM(WAIT)=R6  ;  
+	    nop ;
+	    BIT SET MODE2 0x78000; /* Flag 3 .. Flag 0 sind outputs */ 
+	    BIT CLR ASTAT 0x80000 ; /* clr Flag 0 ; Led an */
+
+	    I1=0x2		;
+	    DM(INTERNAL_SINGLE_CYCLE_WR,I1)=R0;
+	    R15=0xff00		;
+	    DM (LOC_IO_IN_REG)=R15;  /* clear latched input bits */
+	    BIT SET IMASK IRQ1I	;    /* enable IRQ1 on SHARC (inputs) */
+	    BIT SET MODE2 IRQ1E	;    /* set IRQ1 to edge sensitive */
+	    BIT SET MODE1 IRPTEN;    /* enable IRQs on SHARC */
+	    I1=0x1002           ;
+	    DM(INTERNAL_SINGLE_CYCLE_WR,I1)=R0;
+	
+LOOP_START:
+
+	
+// note:	odd byte access -> d16 access
+	        R10 = 0xC10B    ; 
+	        R13 = 0xFF      ; 
+	
+		R0 =  0xC119 ;  // address selector
+		R1 =  0xC123 ;  // address RT1, reflects 0xC122
+		R2 =  0xC125 ;  // address RT2, erflects 0xC124
+
+		R5 =  0x1    ; 
+		R6 =  0x100  ;
+
+        DM(VME_WRITE_DATA_REG)=R5 ; 
+
+Hit_Wait:
+ 	DM (VME_SINGLE_CYCLE + VME_AM_29 ) = R10 ;
+VMEHITWAIT:
+ 	R15 = DM (LOC_SEQ_STATUS)      ;     	 
+        BTST R15 by 0                  ;	
+ 	IF NOT SZ JUMP (PC,VMEHITWAIT) ;  
+	R11 =  DM(VME_READ_DATA_REG)   ;
+	R11 =  R11 AND R13	       ;
+	IF EQ JUMP (PC,Hit_Wait)       ; 
+	
+ 	DM (VME_SINGLE_CYCLE + VME_HOLD_MASTER + VME_WRITE + VME_AM_29 ) = R0 ;
+VMEWAIT1:
+ 	R15 = DM (LOC_SEQ_STATUS)      ;     	 
+        BTST R15 by 0                  ;	
+ 	IF NOT SZ JUMP (PC,VMEWAIT1)   ;  
+ 	DM (VME_SINGLE_CYCLE + VME_HOLD_MASTER + VME_AM_29 ) = R1 ;
+VMEWAIT2:
+ 	R15 = DM (LOC_SEQ_STATUS)      ;     	 
+        BTST R15 by 0                  ;	
+ 	IF NOT SZ JUMP (PC,VMEWAIT2)   ;  
+ 	DM (VME_SINGLE_CYCLE + VME_HOLD_MASTER + VME_AM_29 ) = R2 ;
+VMEWAIT3:
+ 	R15 = DM (LOC_SEQ_STATUS)      ;     	 
+        BTST R15 by 0                  ;	
+ 	IF NOT SZ JUMP (PC,VMEWAIT3)   ;  
+ 	DM (VME_SINGLE_CYCLE + VME_HOLD_MASTER + VME_WRITE + VME_AM_29 ) = R0 ;
+VMEWAIT4:
+ 	R15 = DM (LOC_SEQ_STATUS)      ;     	 
+        BTST R15 by 0                  ;	
+ 	IF NOT SZ JUMP (PC,VMEWAIT4)   ;  
+ 	DM (VME_SINGLE_CYCLE + VME_HOLD_MASTER + VME_AM_29 ) = R1 ;
+VMEWAIT5:
+ 	R15 = DM (LOC_SEQ_STATUS)      ;     	 
+        BTST R15 by 0                  ;	
+ 	IF NOT SZ JUMP (PC,VMEWAIT5)   ;  
+ 	DM (VME_SINGLE_CYCLE + VME_HOLD_MASTER + VME_AM_29 ) = R2 ;
+VMEWAIT6:
+ 	R15 = DM (LOC_SEQ_STATUS)      ;     	 
+        BTST R15 by 0                  ;	
+ 	IF NOT SZ JUMP (PC,VMEWAIT6)   ;  
+ 	DM (VME_SINGLE_CYCLE + VME_HOLD_MASTER + VME_WRITE + VME_AM_29 ) = R0 ;
+VMEWAIT7:
+ 	R15 = DM (LOC_SEQ_STATUS)      ;     	 
+        BTST R15 by 0                  ;	
+ 	IF NOT SZ JUMP (PC,VMEWAIT7)   ;  
+ 	DM (VME_SINGLE_CYCLE + VME_HOLD_MASTER + VME_AM_29 ) = R1 ;
+VMEWAIT8:
+ 	R15 = DM (LOC_SEQ_STATUS)      ;     	 
+        BTST R15 by 0                  ;	
+ 	IF NOT SZ JUMP (PC,VMEWAIT8)   ;  
+ 	DM (VME_SINGLE_CYCLE + VME_HOLD_MASTER + VME_AM_29 ) = R2 ;
+VMEWAIT9:
+ 	R15 = DM (LOC_SEQ_STATUS)      ;     	 
+        BTST R15 by 0                  ;	
+ 	IF NOT SZ JUMP (PC,VMEWAIT9)   ;  
+        DM (VME_SINGLE_CYCLE + VME_HOLD_MASTER + VME_WRITE + VME_AM_29 ) = R0 ;
+VMEWAIT10:
+ 	R15 = DM (LOC_SEQ_STATUS)      ;     	 
+        BTST R15 by 0                  ;	
+ 	IF NOT SZ JUMP (PC,VMEWAIT10)   ;  
+ 	DM (VME_SINGLE_CYCLE + VME_HOLD_MASTER + VME_AM_29 ) = R1 ;
+VMEWAIT11:
+ 	R15 = DM (LOC_SEQ_STATUS)      ;     	 
+        BTST R15 by 0                  ;	
+ 	IF NOT SZ JUMP (PC,VMEWAIT11)   ;  
+ 	DM (VME_SINGLE_CYCLE + VME_AM_29 ) = R1 ;
+VMEWAIT12:
+ 	R15 = DM (LOC_SEQ_STATUS)      ;     	 
+        BTST R15 by 0                  ;	
+ 	IF NOT SZ JUMP (PC,VMEWAIT12)   ;  
+	        
+	R3 = LSHIFT R3 BY 16; 
+        CALL Wait_On_VME_Busy ;   /* R15 will be used */
+	     
+		R8 = DM(VME_READ_DATA_REG) ;  // read VME datum
+
+	        R3 = R3 AND R4	; 
+ 	JUMP (PC,Hit_Wait)        ;
+ 
+
+/* subroutine */
+
+Wait_On_VME_Busy:
+ 	   	R15 = DM (LOC_SEQ_STATUS)  ;     	 
+		BTST R15 by 0	;	
+ 		IF NOT SZ JUMP (PC,Wait_On_VME_Busy) ;  
+		RTS ;
+
+
+/* IRQ service routine */
+Irq_Service_IRQ1:	
+	R12=R12+1		; /* increment IRQ counter     */
+	R15=DM(LOC_IO_IN_REG)	; /* get latched signals       */
+	DM(LOC_IO_IN_REG)=R15	; /* clear all latched signals */
+	RTI			;
+	
+	
+	.ENDSEG;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

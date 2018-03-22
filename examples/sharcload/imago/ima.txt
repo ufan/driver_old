@@ -1,0 +1,111 @@
+#
+# HITDELAY 7000 
+# 
+mki:/home/mki/sis1100/imago # ./imago
+Read configuration file: imago.conf
+DSP path: imagoasm/imago.ldr
+resetting SHARC DSP
+loader file imagoasm/imago.ldr opened
+load file length: 2059
+loading SHARC DSP
+starting SHARC DSP
+main loop
+bank 0 flag: 655360
+blt0 data: 0x   4b617
+blt0 data: 0x    15ce
+blt0 data: 0x    15cf
+blt0 data: 0x    15cf
+blt0 data: 0x    15d0
+blt0 data: 0x       3
+blt0 data: 0x    15cf
+blt0 data: 0x    15d0
+blt0 data: 0x    15d0
+blt0 data: 0x    15d3
+blt0 data: 0x       1
+blt0 data: 0x    15d2
+blt0 data: 0x    15d3
+blt0 data: 0x    15d3
+blt0 data: 0x    15d4
+blt0 data: 0x       1
+blt0 data: 0x    15d1
+blt0 data: 0x    15d1
+blt0 data: 0x    15d1
+blt0 data: 0x    15d2
+bank 1 flag: 655360
+blt1 data: 0x       1
+blt1 data: 0x    15cd
+blt1 data: 0x    15cd
+blt1 data: 0x    15cd
+blt1 data: 0x    15cf
+blt1 data: 0x       2
+blt1 data: 0x    15cd
+blt1 data: 0x    15cd
+blt1 data: 0x    15cd
+blt1 data: 0x    15cf
+blt1 data: 0x       1
+blt1 data: 0x    15cc
+blt1 data: 0x    15cd
+blt1 data: 0x    15cd
+blt1 data: 0x    15ce
+blt1 data: 0x       1
+blt1 data: 0x    15cd
+blt1 data: 0x    15ce
+blt1 data: 0x    15ce
+blt1 data: 0x    15cf
+#
+# HITDELAY 3000 
+# 
+mki:/home/mki/sis1100/imago # ./imago
+Read configuration file: imago.conf
+DSP path: imagoasm/imago.ldr
+resetting SHARC DSP
+loader file imagoasm/imago.ldr opened
+load file length: 2059
+loading SHARC DSP
+starting SHARC DSP
+main loop
+bank 0 flag: 655360
+blt0 data: 0x   4b627
+blt0 data: 0x     951
+blt0 data: 0x     950
+blt0 data: 0x     950
+blt0 data: 0x     958
+blt0 data: 0x       2
+blt0 data: 0x     94f
+blt0 data: 0x     950
+blt0 data: 0x     950
+blt0 data: 0x     954
+blt0 data: 0x       2
+blt0 data: 0x     94f
+blt0 data: 0x     94f
+blt0 data: 0x     94f
+blt0 data: 0x     953
+blt0 data: 0x       1
+blt0 data: 0x     950
+blt0 data: 0x     950
+blt0 data: 0x     950
+blt0 data: 0x     953
+bank 1 flag: 655360
+blt1 data: 0x       1
+blt1 data: 0x     950
+blt1 data: 0x     950
+blt1 data: 0x     950
+blt1 data: 0x     951
+blt1 data: 0x       1
+blt1 data: 0x     94f
+blt1 data: 0x     950
+blt1 data: 0x     950
+blt1 data: 0x     951
+blt1 data: 0x       1
+blt1 data: 0x     950
+blt1 data: 0x     950
+blt1 data: 0x     950
+blt1 data: 0x     952
+blt1 data: 0x       2
+blt1 data: 0x     951
+blt1 data: 0x     950
+blt1 data: 0x     950
+blt1 data: 0x     951
+bank 0 flag: 655360
+
+

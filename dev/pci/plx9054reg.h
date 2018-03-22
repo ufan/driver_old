@@ -1,4 +1,4 @@
-/* $ZEL: plx9054reg.h,v 1.5 2010/06/06 21:21:51 wuestner Exp $ */
+/* $ZEL: plx9054reg.h,v 1.4 2008/02/06 19:32:41 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2004

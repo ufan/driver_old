@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_ddma_map_linux.c,v 1.7 2010/04/19 13:30:39 wuestner Exp $ */
+/* $ZEL: sis1100_ddma_map_linux.c,v 1.6 2010/01/18 09:54:30 wuestner Exp $ */
 
 /*
  * Copyright (c) 2005-2008
@@ -27,7 +27,6 @@
  */
 
 #include "sis1100_sc.h"
-#include "linux/vmalloc.h"
 
 void
 sis1100_ddma_zero(struct demand_dma_block* block)
@@ -208,46 +207,6 @@ sis1100_ddma_map_block(struct sis1100_softc *sc,
 #endif
         }
     }
-
-    return 0;
-}
-
-void
-sis1100_ddma_free_dummyblock(struct sis1100_softc *sc,
-    struct demand_dma_block* block)
-{
-    pci_free_consistent(sc->pdev, block->buf.size,
-                block->buf.cpu_addr, block->buf.dma_handle);
-}
-
-int
-sis1100_ddma_alloc_dummyblock(struct sis1100_softc *sc,
-    struct demand_dma_block* block)
-{
-    struct plx9054_dmadesc *desc;
-    block->buf.size=PAGE_SIZE;
-    block->buf.cpu_addr=pci_alloc_consistent(sc->pdev,
-            block->buf.size, &block->buf.dma_handle);
-    if (!block->buf.cpu_addr) {
-            pERROR(sc, "pci_alloc_consistent for dummyblock failed");
-            return ENOMEM;
-    }
-    if (block->buf.dma_handle&0xfff) {
-        pERROR(sc, "dummyblock is not aligned!");
-        return ENOMEM;
-    }
-    /* we use the first 4 words of the page for the descriptor */
-    desc=(struct plx9054_dmadesc*)block->buf.cpu_addr;
-    desc->pcistart   =
-        cpu_to_le32(block->buf.dma_handle+sizeof(struct plx9054_dmadesc));
-    desc->localstart =
-        cpu_to_le32(0);
-    desc->size       =
-        cpu_to_le32(PAGE_SIZE-sizeof(struct plx9054_dmadesc));
-    desc->next       =
-        cpu_to_le32(block->buf.dma_handle|9);
-
-    block->dmadpr0=block->buf.dma_handle;
 
     return 0;
 }

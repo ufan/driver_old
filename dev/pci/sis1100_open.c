@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_open.c,v 1.19 2010/04/19 14:21:39 wuestner Exp $ */
+/* $ZEL: sis1100_open.c,v 1.18 2009/08/31 15:30:28 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2008  Peter Wuestner.  All rights reserved.
@@ -118,9 +118,9 @@ cleanup_fd(struct sis1100_fdata* fd)
     case sis1100_hw_psf4ad: break; /* do nothing */
     }
 
-    if ((sc->demand_dma.status!=ddma_invalid) &&
+    if ((sc->demand_dma.status!=dma_invalid) &&
                 (sc->demand_dma.owner==fd)) {
-        if (sc->demand_dma.status==ddma_running)
+        if (sc->demand_dma.status==dma_running)
             sis1100_ddma_stop(sc, fd, 0);
         sis1100_ddma_map(sc, fd, 0);
     }

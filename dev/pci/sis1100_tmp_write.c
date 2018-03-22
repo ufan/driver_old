@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_tmp_write.c,v 1.12 2010/04/19 14:22:35 wuestner Exp $ */
+/* $ZEL: sis1100_tmp_write.c,v 1.11 2009/04/26 20:28:22 wuestner Exp $ */
 
 /*
  * Copyright (c) 2003-2008
@@ -39,7 +39,7 @@ sis1100_tmp_write(struct sis1100_softc* sc,
     u_int32_t error;
     u_int32_t head;
 
-    /* the following switch could be replaced by one line if firmware of
+    /* the following switch cold be replaced by one line if firmware of
        sis3104 would be correct:
        data=(data&(0xffffffffU>>((4-size)<<3)))<<((addr&3)<<3);
     */
@@ -160,9 +160,7 @@ sis1100_remote_reg_write(struct sis1100_softc* sc, u_int32_t offs,
 {
     u_int32_t head, error;
 
-    if (!locked)
-        mutex_lock(&sc->sem_hw);
-
+    if (!locked) mutex_lock(&sc->sem_hw);
     _writereg32(sc, offs+0x800, data);
     mb_reg();
     do {
@@ -175,9 +173,7 @@ sis1100_remote_reg_write(struct sis1100_softc* sc, u_int32_t offs,
         else
             error=0;
     }
-
-    if (!locked)
-        mutex_unlock(&sc->sem_hw);
+    if (!locked) mutex_unlock(&sc->sem_hw);
 
     return error;
 }

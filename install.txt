@@ -1,0 +1,26 @@
+
+SIS1100 Linux driver Installation
+
+1. copy directory sis1100-2.13-11 for example to sis1100
+
+
+2. driver installieren  
+$/sis1100/sis1100-2.13-11/
+$cd dev/pci/
+$make clean
+$make
+
+-- as su
+$make install
+
+-- check
+$dmesg
+
+-- generate library 
+$cd /sis1100/sis1100-2.13-11/sis3100_calls
+$make
+
+-- test
+$cd /sis1100/sis1100-2.13-11/examples/vme_simple_routines
+$make
+$ ./vme_read_d32 /dev/sis1100_00remote 0x42000004

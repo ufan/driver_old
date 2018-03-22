@@ -1,4 +1,4 @@
-/* $ZEL: sis3100rem_init.c,v 1.15 2010/06/17 18:14:22 wuestner Exp $ */
+/* $ZEL: sis3100rem_init.c,v 1.14 2010/01/21 21:50:53 wuestner Exp $ */
 
 /*
  * Copyright (c) 2001-2004
@@ -28,8 +28,6 @@
 
 #include "sis1100_sc.h"
 #include "sis3100_map.h"
-
-#define DEBUG_RESET 0
 
 static int
 sis3100_dsp_present(struct sis1100_softc* sc)
@@ -134,18 +132,6 @@ sis3100_set_timeouts(struct sis1100_softc* sc, int berr, int arb)
     return res;
 }
 
-/*
- * sis3100rem_init:
- *     initializes the sis310X if necessary
- *     value for reset (just forwarded from sis1100_init_remote):
- *         0: dont change hardware setup (link reconnected only)
- *         1: remote reset already done by sis1100_init
- *         2: try to reset all and reinitialize (requested by user)
- *     We will initialize the sis310X if reset>0 or if the
- *     global VME IRQ bit is not set.
- *     (This will lead to an unwanted reset if the user resets the
- *     global VME IRQ bit and dis- and reconnects the optical link.)
- */
 int
 sis3100rem_init(struct sis1100_softc* sc, int reset)
 {
@@ -171,6 +157,7 @@ sis3100rem_init(struct sis1100_softc* sc, int reset)
         max_fv=MAX_FV_4;
         break;
     case 0x00210200: /* 2G 3104 */
+    case 0x00020200: /* 3104 autobaud */
         min_fv=MIN_FV_4;
         max_fv=MAX_FV_4;
         break;
@@ -190,48 +177,11 @@ sis3100rem_init(struct sis1100_softc* sc, int reset)
                 max_fv);
     }
 
-#if (!DEBUG_RESET)
-    {
-        int do_reset;
-        u_int32_t stat;
-
-        do_reset=reset>0;
-        if (!reset) {
-            sis3100readremreg(sc, vme_master_sc, &stat, 1);
-            if (!(stat&vme_unused))
-                do_reset=1;
-        }
-
-        if (do_reset) {
-            /* set the VME IRQ bits */
-            sis3100writeremreg(sc, vme_irq_sc, 0x00fe0001, 1);
-            sis3100_set_timeouts(sc, 5000, 10);
-            /* mark module as initialised */
-            sis3100writeremreg(sc, vme_master_sc, vme_unused, 1);
-        }
+    if (reset>0) {
+        sis3100writeremreg(sc, vme_irq_sc, 0x00fe0001, 1); /*disable VME IRQs*/
+        sis3100writeremreg(sc, vme_master_sc, 8, 1);
+        sis3100_set_timeouts(sc, 5000, 10);
     }
-#else
-    {
-        int old_do_reset, new_do_reset;
-        u_int32_t oldstat, newstat;
-        old_do_reset=reset>0;
-        new_do_reset=old_do_reset;
-        sis3100readremreg(sc, vme_master_sc, &oldstat, 1);
-        if (!(oldstat&vme_unused))
-            new_do_reset=1;
-        if (new_do_reset) {
-            sis3100writeremreg(sc, vme_irq_sc, 0x00fe0001, 1);
-            sis3100writeremreg(sc, vme_master_sc, vme_unused, 1);
-            sis3100_set_timeouts(sc, 5000, 10);
-        }
-        sis3100readremreg(sc, vme_master_sc, &newstat, 1);
-        pERROR(sc, "3100_reset: oldstat=%08x vme_unused=%08x",
-                    oldstat, vme_unused);
-        pERROR(sc, "3100_reset: oldreset=%d newreset=%d "
-                    "oldstat=%08x newstat=%08x",
-                    old_do_reset, new_do_reset, oldstat, newstat);
-    }
-#endif
 
     switch (sc->remote_ident&0x00ffff00) {
     case 0x00010100:
@@ -249,6 +199,11 @@ sis3100rem_init(struct sis1100_softc* sc, int reset)
         break;
     case 0x00210200:
         pINFO(sc, "remote device is SIS3104 with 2G link");
+        sc->ram_size=0;
+        sc->dsp_present=0;
+        break;
+    case 0x00020200:
+        pINFO(sc, "remote device is SIS3104 with 1G/2G autobaud");
         sc->ram_size=0;
         sc->dsp_present=0;
         break;

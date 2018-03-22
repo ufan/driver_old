@@ -1,4 +1,4 @@
-/* $ZEL: sis1100_ioctl32_linux.c,v 1.13 2010/08/02 19:25:38 wuestner Exp $ */
+/* $ZEL: sis1100_ioctl32_linux.c,v 1.12 2010/01/18 19:24:52 wuestner Exp $ */
 
 /*
  * Copyright (c) 2005-2008
@@ -436,7 +436,6 @@ ioctl32_sis1100_ddma_mark(struct sis1100_softc* sc, struct sis1100_fdata* fd,
     return res; 
 }
 
-#if 0
 static int
 ioctl32_sis1100_ddma_wait(struct sis1100_softc* sc, struct sis1100_fdata* fd,
         compat_int_t *d)
@@ -446,7 +445,6 @@ ioctl32_sis1100_ddma_wait(struct sis1100_softc* sc, struct sis1100_fdata* fd,
     *d=data;
     return res; 
 }
-#endif
 
 static int
 ioctl32_dsp_load(struct sis1100_softc* sc, struct sis1100_fdata* fd,
@@ -642,11 +640,9 @@ _sis1100_ioctl32(struct sis1100_softc* sc, struct sis1100_fdata* fd,
     case SIS1100_32_DEMAND_DMA_MARK:
         res=ioctl32_sis1100_ddma_mark(sc, fd, (compat_int_t*)data);
         break;
-#if 0
     case SIS1100_32_DEMAND_DMA_WAIT:
         res=ioctl32_sis1100_ddma_wait(sc, fd, (compat_int_t*)data);
         break;
-#endif
     case SIS3100_32_VME_WRITE_BLIND:
         res=ioctl32_vme_write_blind(sc, fd, (struct sis1100_32_vme_req*)data);
         break;
